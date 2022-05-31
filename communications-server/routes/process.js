@@ -6,6 +6,8 @@ const router = express.Router();
 const noop = () => {};
 
 router.ws("/", (ws, req) => {
+  console.log("Process Connection");
+
   function send(packet) {
     if (typeof packet !== "string") {
       packet = JSON.stringify(packet);

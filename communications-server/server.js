@@ -8,6 +8,11 @@ let webService = require("./config.json");
 const app = express();
 require("express-ws")(app);
 
+app.use(function (req, res, next) {
+  console.log(req.url);
+  next();
+});
+
 const serviceName = webService.name;
 const port = webService.express.port;
 
