@@ -13,7 +13,10 @@ class ClientConnection extends EventEmitter {
   _ensureRedisClient() {
     if (!this.redisClient) {
       this.redisClient = getRedisClient();
-      this.redisClient.on("message", this._handleRedisMessage.bind(this));
+      this.redisClient.addListener(
+        "message",
+        this._handleRedisMessage.bind(this)
+      );
 
       this.redisPublisher = getRedisClient();
     }
