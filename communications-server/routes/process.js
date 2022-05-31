@@ -49,7 +49,21 @@ router.ws("/", (ws, req) => {
     // console.log("RECV", msg);
     msg = JSON.parse(msg);
 
-    console.log(msg);
+    if (msg.type === "subscribe") {
+      let locationId = msg.lcoationId;
+
+      process.subscribe(locationId);
+    } else {
+      let locationId = msg.locationId;
+
+      if (
+        typeof msg.type === "string" &&
+        typeof msg.locationId === "string" &&
+        typeof msg.data === "object"
+      ) {
+        process.publish(locationId, msg);
+      }
+    }
   });
 
   ws.on("error", (e) => {

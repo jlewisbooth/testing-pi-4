@@ -1,15 +1,24 @@
 const redis = require("redis");
-const EventEmitter = require("events").EventEmitter;
 const conf = require("../config.json");
 
 function getRedisClient() {
   return redis.createClient();
 }
 
-class ProcessConnection extends EventEmitter {
+class StateManager {
   constructor() {
-    super();
+    this._ensureRedisClient();
+
+    this.state = {
+      direction: 1,
+      lastKnownPosition: "ub.model-uk.glasgow-station",
+    };
+
+    // listen to raw tower bridge data
+    this.subscribe("ub.model-uk.tower-bridge");
   }
+
+  getState() {}
 
   publish(locationId, packet) {
     if (!!locationId) {
@@ -20,7 +29,7 @@ class ProcessConnection extends EventEmitter {
 
     this._ensureRedisClient();
 
-    let channel = `${conf.tags.fromSensor}|${locationId}`;
+    let channel = `${conf.tags.toClient}|${locationId}`;
     this.redisPublisher.publish(channel, JSON.stringify(packet));
   }
 
@@ -33,7 +42,7 @@ class ProcessConnection extends EventEmitter {
 
     this._ensureRedisClient();
 
-    let channel = `${conf.tags.fromClient}|${locationId}`;
+    let channel = `${conf.tags.fromSensor}|${locationId}`;
     this.redisClient.subscribe(channel);
   }
 
@@ -46,15 +55,7 @@ class ProcessConnection extends EventEmitter {
   }
 
   _handleRedisMessage(channel, msg) {
-    let packet = JSON.parse(msg);
-
-    this.emit("message", {
-      locationId: channel,
-      type: packet.type,
-      data: {
-        ...packet.data,
-      },
-    });
+    console.log("MESSAGE STATE MANAGER", channel, msg);
   }
 
   close() {
@@ -70,4 +71,12 @@ class ProcessConnection extends EventEmitter {
   }
 }
 
-module.exports = ProcessConnection;
+let stateManager = new StateManager();
+
+function getStateManager() {
+  return stateManager;
+}
+
+module.exports = {
+  getStateManager,
+};

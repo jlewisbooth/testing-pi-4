@@ -1,5 +1,6 @@
 const express = require("express");
 const errors = require("@ub/errors");
+const { getStateManager } = require("./managers/state-manager");
 
 const UDPServer = require("./managers/udp-server");
 
@@ -24,6 +25,7 @@ app.use(errors.ErrorHandler());
 
 // start udp server to listen to any datagram packets
 let udpServer = new UDPServer();
+let stateManager = getStateManager();
 
 if (require.main === module) {
   // running as an independent server
