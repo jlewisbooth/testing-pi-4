@@ -9,6 +9,8 @@ function getRedisClient() {
 class ProcessConnection extends EventEmitter {
   constructor() {
     super();
+
+    await this._ensureRedisClient();
   }
 
   publish(locationId, packet) {
@@ -21,6 +23,9 @@ class ProcessConnection extends EventEmitter {
     this._ensureRedisClient();
 
     let channel = `${conf.tags.fromSensor}|${locationId}`;
+
+    console.log("PUBLISHING FROM PROCESS", channel);
+
     this.redisPublisher.publish(channel, JSON.stringify(packet));
   }
 
@@ -37,11 +42,14 @@ class ProcessConnection extends EventEmitter {
     this.redisClient.subscribe(channel);
   }
 
-  _ensureRedisClient() {
+  async _ensureRedisClient() {
     if (!this.redisClient) {
       this.redisClient = getRedisClient();
       this.redisClient.on("message", this._handleRedisMessage.bind(this));
       this.redisPublisher = getRedisClient();
+
+      await this.redisClient.connect();
+      await this.redisPublisher.connect();
     }
   }
 
