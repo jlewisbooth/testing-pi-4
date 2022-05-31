@@ -1,0 +1,9 @@
+{
+  "udp": {
+    "port": 45091
+  },
+  "express": {
+    "port": 4000
+  },
+  "name": "Connection Server"
+}
