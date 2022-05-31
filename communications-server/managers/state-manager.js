@@ -13,15 +13,19 @@ class StateManager {
       direction: 1,
       lastKnownPosition: "ub.model-uk.glasgow-station",
     };
-
-    // listen to raw tower bridge data
-    this.subscribe("ub.model-uk.tower-bridge");
   }
 
   getState() {}
 
   async initiateClient() {
     await this._ensureRedisClient();
+
+    this.setUpSubscribers();
+  }
+
+  setUpSubscribers() {
+    // listen to raw tower bridge data
+    this.subscribe("ub.model-uk.tower-bridge");
   }
 
   publish(locationId, packet) {
