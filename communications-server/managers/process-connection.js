@@ -10,6 +10,10 @@ class ProcessConnection extends EventEmitter {
   constructor() {
     super();
 
+    this.initiateClient();
+  }
+
+  initiateClient() {
     await this._ensureRedisClient();
   }
 
