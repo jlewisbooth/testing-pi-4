@@ -7,7 +7,7 @@ function getRedisClient() {
 
 class StateManager {
   constructor() {
-    this._ensureRedisClient();
+    this.initiateClient();
 
     this.state = {
       direction: 1,
@@ -20,6 +20,10 @@ class StateManager {
 
   getState() {}
 
+  async initiateClient() {
+    await this._ensureRedisClient();
+  }
+
   publish(locationId, packet) {
     if (!locationId) {
       console.log("Can't subscribe to this location:", locationId);
@@ -30,6 +34,9 @@ class StateManager {
     this._ensureRedisClient();
 
     let channel = `${conf.tags.toClient}|${locationId}`;
+
+    console.log("PUBLISHING STATE MANAGER", channel);
+
     this.redisPublisher.publish(channel, JSON.stringify(packet));
   }
 
@@ -46,11 +53,14 @@ class StateManager {
     this.redisClient.subscribe(channel);
   }
 
-  _ensureRedisClient() {
+  async _ensureRedisClient() {
     if (!this.redisClient) {
       this.redisClient = getRedisClient();
       this.redisClient.on("message", this._handleRedisMessage.bind(this));
       this.redisPublisher = getRedisClient();
+
+      await this.redisClient.connect();
+      await this.redisPublisher.connect();
     }
   }
 
