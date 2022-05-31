@@ -57,16 +57,16 @@ class StateManager {
 
     console.log("SUBSCRIBING TO CHANNEL", channel);
 
-    this.redisClient.subscribe(channel);
+    this.redisClient.subscribe(channel, this._handleRedisMessage.bind(this));
   }
 
   async _ensureRedisClient() {
     if (!this.redisClient) {
       this.redisClient = getRedisClient();
-      this.redisClient.addListener(
-        "message",
-        this._handleRedisMessage.bind(this)
-      );
+      //   this.redisClient.addListener(
+      //     "message",
+      //     this._handleRedisMessage.bind(this)
+      //   );
       this.redisPublisher = getRedisClient();
 
       await this.redisClient.connect();
