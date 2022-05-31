@@ -7,6 +7,8 @@ const UDPServer = require("./managers/udp-server");
 let webService = require("./config.json");
 
 const app = express();
+const router = express.Router();
+
 require("express-ws")(app);
 
 app.use(function (req, res, next) {
@@ -17,11 +19,13 @@ app.use(function (req, res, next) {
 const serviceName = webService.name;
 const port = webService.express.port;
 
-app.use("/client", require("./routes/client"));
-app.use("/process", require("./routes/process"));
+router.use("/client", require("./routes/client"));
+router.use("/process", require("./routes/process"));
 
-app.use(errors.NotFoundHandler());
-app.use(errors.ErrorHandler());
+router.use(errors.NotFoundHandler());
+router.use(errors.ErrorHandler());
+
+app.use("/data-stream", router);
 
 // start udp server to listen to any datagram packets
 let udpServer = new UDPServer();
