@@ -1,5 +1,8 @@
 const express = require("express");
 const errors = require("@ub/errors");
+
+const UDPServer = require("./managers/udp-server");
+
 let webService = require("./config.json");
 
 const app = express();
@@ -8,11 +11,14 @@ require("express-ws")(app);
 const serviceName = webService.name;
 const port = webService.express.port;
 
-app.use("/client-stream", require("./routes/client-stream"));
-app.use("/data-upload", require("./routes/data-upload"));
+app.use("/client", require("./routes/client"));
+app.use("/process", require("./routes/process"));
 
 app.use(errors.NotFoundHandler());
 app.use(errors.ErrorHandler());
+
+// start udp server to listen to any datagram packets
+let udpServer = new UDPServer();
 
 if (require.main === module) {
   // running as an independent server
