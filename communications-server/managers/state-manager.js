@@ -50,6 +50,9 @@ class StateManager {
     this._ensureRedisClient();
 
     let channel = `${conf.tags.fromSensor}|${locationId}`;
+
+    console.log("SUBSCRIBING TO CHANNEL", channel);
+
     this.redisClient.subscribe(channel);
   }
 
