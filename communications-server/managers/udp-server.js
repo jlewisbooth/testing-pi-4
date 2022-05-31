@@ -8,6 +8,8 @@ server.bind(config.udp.port);
 
 class UDPServer extends EventEmitter {
   constructor() {
+    super();
+
     this.server = server;
     this.subscribers = [];
 
