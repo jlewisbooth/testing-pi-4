@@ -12,7 +12,7 @@ class ProcessConnection extends EventEmitter {
   }
 
   publish(locationId, packet) {
-    if (!!locationId) {
+    if (!locationId) {
       console.log("Can't subscribe to this location:", locationId);
 
       return;
@@ -25,7 +25,7 @@ class ProcessConnection extends EventEmitter {
   }
 
   subscribe(locationId) {
-    if (!!locationId) {
+    if (!locationId) {
       console.log("Can't subscribe to this location:", locationId);
 
       return;

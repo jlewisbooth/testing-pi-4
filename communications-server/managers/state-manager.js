@@ -21,7 +21,7 @@ class StateManager {
   getState() {}
 
   publish(locationId, packet) {
-    if (!!locationId) {
+    if (!locationId) {
       console.log("Can't subscribe to this location:", locationId);
 
       return;
@@ -34,7 +34,7 @@ class StateManager {
   }
 
   subscribe(locationId) {
-    if (!!locationId) {
+    if (!locationId) {
       console.log("Can't subscribe to this location:", locationId);
 
       return;
