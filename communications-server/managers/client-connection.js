@@ -66,8 +66,6 @@ class ClientConnection extends EventEmitter {
       },
     });
 
-    console.log(JSON.parse(packet));
-
     this.emit("message", {
       locationId: channel,
       type: packet.type,

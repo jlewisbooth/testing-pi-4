@@ -77,7 +77,13 @@ class StateManager {
 
     if (channelComs[0] === conf.tags.fromSensor) {
       let locationId = channelComs[1];
-      this.publish(`${locationId}`, msg);
+
+      // potentially save state or manipulate data
+      let packet = JSON.parse(msg);
+
+      // ===============
+
+      this.publish(`${locationId}`, packet);
     }
   }
 
