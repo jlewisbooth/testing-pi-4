@@ -40,9 +40,6 @@ class StateManager {
     this._ensureRedisClient();
 
     let channel = `${conf.tags.toClient}|${locationId}`;
-
-    console.log("PUBLISHING STATE MANAGER", channel);
-
     this.redisPublisher.publish(channel, JSON.stringify(packet));
   }
 
@@ -58,7 +55,6 @@ class StateManager {
     let channel = `${conf.tags.fromSensor}|${locationId}`;
 
     console.log("State Manager subscribing to channel: ", channel);
-
     this.redisClient.subscribe(channel, this._handleRedisMessage.bind(this));
   }
 

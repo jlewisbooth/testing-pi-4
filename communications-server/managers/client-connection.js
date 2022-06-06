@@ -44,30 +44,18 @@ class ClientConnection extends EventEmitter {
     this._ensureRedisClient();
 
     let channel = `${conf.tags.toClient}|${locationId}`;
-
     console.log(`${this.clientId} subscribing to channel: `, channel);
-
     this.redisClient.subscribe(channel, this._handleRedisMessage.bind(this));
   }
 
-  _handleRedisMessage(msg, channel) {
-    console.log("CLIENT MESSAGE", msg);
-
+  _handleRedisMessage(msg) {
     let packet = msg;
     if (typeof msg === "string") {
       packet = JSON.parse(msg);
     }
 
-    console.log({
-      locationId: channel,
-      type: packet.type,
-      data: {
-        ...packet.data,
-      },
-    });
-
     this.emit("message", {
-      locationId: channel,
+      locationId: packet.locationId,
       type: packet.type,
       data: {
         ...packet.data,

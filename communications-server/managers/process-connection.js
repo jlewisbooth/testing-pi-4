@@ -27,9 +27,6 @@ class ProcessConnection extends EventEmitter {
     this._ensureRedisClient();
 
     let channel = `${conf.tags.fromSensor}|${locationId}`;
-
-    console.log("PUBLISHING FROM PROCESS", channel);
-
     this.redisPublisher.publish(channel, JSON.stringify(packet));
   }
 
@@ -43,6 +40,9 @@ class ProcessConnection extends EventEmitter {
     this._ensureRedisClient();
 
     let channel = `${conf.tags.fromClient}|${locationId}`;
+
+    console.log("Sensor subscribing on channel: ", channel);
+
     this.redisClient.subscribe(channel);
   }
 
