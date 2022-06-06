@@ -71,8 +71,6 @@ class StateManager {
   _handleRedisMessage(msg, channel) {
     let channelComs = channel.split("|");
 
-    console.log("STATE MANAGER", channel);
-
     if (channelComs[0] === conf.tags.fromSensor) {
       let locationId = channelComs[1];
 
@@ -80,8 +78,6 @@ class StateManager {
       let packet = JSON.parse(msg);
 
       // ===============
-
-      console.log("STATE MANAGER", packet);
 
       this.publish(`${locationId}`, packet);
     }

@@ -4,10 +4,7 @@ const ClientConnection = require("../managers/client-connection");
 const router = express.Router();
 
 router.ws("/", (ws, req) => {
-  console.log("CLIENT CONNECTION");
-
   function send(packet) {
-    console.log("SEND", packet);
     if (typeof packet !== "string") {
       packet = JSON.stringify(packet);
     }
@@ -29,10 +26,8 @@ router.ws("/", (ws, req) => {
   });
 
   ws.on("message", async (msg) => {
-    // console.log("RECV", msg);
+    console.log("RECV", msg);
     msg = JSON.parse(msg);
-
-    console.log(msg);
 
     if (msg.type === "subscribe") {
       let locationId = msg.locationId;
