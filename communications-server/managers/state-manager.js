@@ -26,6 +26,8 @@ class StateManager {
   setUpSubscribers() {
     // listen to raw tower bridge data
     this.subscribe("ub.model-uk.tower-bridge");
+    this.subscribe("ub.model-uk.leeds");
+    this.subscribe("ub.model-uk.glasgow-station");
   }
 
   publish(locationId, packet) {
@@ -73,12 +75,12 @@ class StateManager {
   _handleRedisMessage(channel, msg) {
     let channelComs = channel.split("|");
 
-    console.log(msg.locationId);
     if (channelComs[0] === conf.tags.fromSensor) {
       let locationId = channelComs[1];
-    }
+      this.publish(`${conf.tags.toClient}|${locationId}`, msg);
 
-    console.log("MESSAGE STATE MANAGER", channel, msg);
+      console.log("MESSAGE STATE MANAGER", channel, msg);
+    }
   }
 
   close() {

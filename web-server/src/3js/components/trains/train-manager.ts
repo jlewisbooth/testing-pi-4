@@ -140,9 +140,9 @@ export default class TrainManager {
   findTrackCoords(object: Mesh, trackId: "west" | "east") {
     if (trackId === "west") {
       let startPoint = new Vector3(
-        0.4944128465652466,
+        0.3144128465652466,
         0.018175000324845314,
-        1.338647681236267
+        1.488647681236267
       );
       let coords: Vector3[] | null = parseTrackModelForPoints(
         object,
@@ -154,9 +154,9 @@ export default class TrainManager {
     }
     if (trackId === "east") {
       let startPoint = new Vector3(
-        0.4644128465652466,
+        0.2544128465652466,
         0.018175000324845314,
-        1.338647681236267
+        1.482647681236267
       );
 
       let coords: Vector3[] | null = parseTrackModelForPoints(
@@ -180,22 +180,24 @@ export default class TrainManager {
   }
 
   highlightTrack(parentModel: Object3D) {
-    const geometry = new SphereGeometry(0.004, 32, 16);
+    const geometry = new SphereGeometry(0.003, 32, 32);
 
     // initial start track
+    // pink
     // let geometryStartWest = new CylinderGeometry(0.005, 0.005, 0.5);
     // let materialStartWest = new MeshBasicMaterial({ color: 0xff00ff });
     // let startPoleWest = new Mesh(geometryStartWest, materialStartWest);
     // startPoleWest.position.copy(
-    //   new Vector3(0.4944128465652466, 0.018175000324845314, 1.338647681236267)
+    //   new Vector3(0.3144128465652466, 0.018175000324845314, 1.488647681236267)
     // );
     // parentModel.add(startPoleWest);
 
+    // // yellow
     // let geometryStartEast = new CylinderGeometry(0.005, 0.005, 0.5);
     // let materialStartEast = new MeshBasicMaterial({ color: 0xffff00 });
     // let startPoleEast = new Mesh(geometryStartEast, materialStartEast);
     // startPoleEast.position.copy(
-    //   new Vector3(0.4644128465652466, 0.018175000324845314, 1.338647681236267)
+    //   new Vector3(0.2544128465652466, 0.018175000324845314, 1.482647681236267)
     // );
     // parentModel.add(startPoleEast);
 
@@ -236,7 +238,7 @@ export default class TrainManager {
     //     let sphere = new Mesh(geometry, material);
     //     let newPosition = new Vector3(
     //       this.sortedTrackCoords[i].x,
-    //       this.sortedTrackCoords[i].y + i * 0.001,
+    //       this.sortedTrackCoords[i].y,
     //       this.sortedTrackCoords[i].z
     //     );
     //     sphere.position.copy(newPosition);
@@ -244,16 +246,23 @@ export default class TrainManager {
     //   }
     // }
 
-    // console.log(this.trackCoords);
+    // if (
+    //   !(
+    //     Array.isArray(this.sortedTrackCoords) &&
+    //     this.sortedTrackCoords.length > 3
+    //   )
+    // ) {
+    //   return false;
+    // }
 
     let formattingCurve = new CatmullRomCurve3(this.sortedTrackCoords);
 
-    const points = formattingCurve.getPoints(60);
+    const points = formattingCurve.getPoints(400);
 
     this.trackCurve = new CatmullRomCurve3(points);
 
     // console.log("CATMULL POINTS", points);
-    // let points2 = this.trackCurve.getPoints(100);
+    // let points2 = this.trackCurve.getPoints(400);
 
     // if (Array.isArray(points2)) {
     //   for (let i = 0; i < points2.length - 1; i++) {
@@ -273,13 +282,13 @@ export default class TrainManager {
     // const geometry1 = new BufferGeometry().setFromPoints(points2);
     // const material1 = new LineBasicMaterial({ color: 0xff0000 });
 
-    // Create the final object to add to the scene
+    // // Create the final object to add to the scene
     // const curveObject = new Line(geometry1, material1);
     // parentModel.add(curveObject);
   }
 
-  trainSpacingMid: number = 0.017;
-  trainSpacingEnd: number = 0.034;
+  trainSpacingMid: number = 0.0145;
+  trainSpacingEnd: number = 0.0287;
 
   animate(timestamp: number) {
     let dt = timestamp - this.lastTimestamp;
@@ -294,49 +303,54 @@ export default class TrainManager {
         axis.crossVectors(up, tangent).normalize();
         let radians = Math.acos(up.dot(tangent));
 
-        let frontTrain = this.train[0];
+        for (let i = 0; i < this.train.length; i++) {
+          let carriage = this.train[i];
+          if (carriage.trainId === "FRONT_TRAIN") {
+            carriage.moveTo(newPosition);
+            carriage.rotateFromAxisAngle(axis, radians);
+          }
 
-        if (frontTrain) {
-          frontTrain.moveTo(newPosition);
-          frontTrain.rotateFromAxisAngle(axis, radians);
-        }
+          if (carriage.trainId === "MID_TRAIN") {
+            let midFraction =
+              this.progressValue - i * this.trainSpacingMid < 0
+                ? 1 + this.progressValue - i * this.trainSpacingMid
+                : this.progressValue - i * this.trainSpacingMid;
 
-        let secondFraction =
-          this.progressValue - this.trainSpacingMid < 0
-            ? 1 + this.progressValue - this.trainSpacingMid
-            : this.progressValue - this.trainSpacingMid;
+            let midPosition = this.trackCurve.getPoint(midFraction);
+            let tangent2 = this.trackCurve.getTangent(midFraction);
 
-        let newPosition2 = this.trackCurve.getPoint(secondFraction);
-        let tangent2 = this.trackCurve.getTangent(secondFraction);
+            let midAxis = new Vector3();
+            midAxis.crossVectors(up, tangent2).normalize();
+            let midRadians = Math.acos(up.dot(tangent2));
 
-        let axis2 = new Vector3();
-        axis2.crossVectors(up, tangent2).normalize();
-        let radians2 = Math.acos(up.dot(tangent2));
+            carriage.moveTo(midPosition);
+            carriage.rotateFromAxisAngle(midAxis, midRadians);
+          }
 
-        let midTrain = this.train[1];
+          if (carriage.trainId === "END_TRAIN") {
+            let endFraction =
+              this.progressValue -
+                ((this.trainLength - 1) * this.trainSpacingMid +
+                  this.trainSpacingEnd) <
+              0
+                ? 1 +
+                  this.progressValue -
+                  ((this.trainLength - 1) * this.trainSpacingMid +
+                    this.trainSpacingEnd)
+                : this.progressValue -
+                  ((this.trainLength - 1) * this.trainSpacingMid +
+                    this.trainSpacingEnd);
 
-        if (midTrain) {
-          midTrain.moveTo(newPosition2);
-          midTrain.rotateFromAxisAngle(axis2, radians2);
-        }
+            let endPosition = this.trackCurve.getPoint(endFraction);
+            let endTagent = this.trackCurve.getTangent(endFraction);
 
-        let thirdFraction =
-          this.progressValue - this.trainSpacingEnd < 0
-            ? 1 + this.progressValue - this.trainSpacingEnd
-            : this.progressValue - this.trainSpacingEnd;
+            let endAxis = new Vector3();
+            endAxis.crossVectors(up, endTagent).normalize();
+            let endRadians = Math.acos(up.dot(endTagent));
 
-        let newPosition3 = this.trackCurve.getPoint(thirdFraction);
-        let tangent3 = this.trackCurve.getTangent(thirdFraction);
-
-        let axis3 = new Vector3();
-        axis3.crossVectors(up, tangent3).normalize();
-        let radians3 = Math.acos(up.dot(tangent3));
-
-        let endTrain = this.train[2];
-
-        if (endTrain) {
-          endTrain.moveTo(newPosition3);
-          endTrain.rotateFromAxisAngle(axis3, radians3);
+            carriage.moveTo(endPosition);
+            carriage.rotateFromAxisAngle(endAxis, endRadians);
+          }
         }
       }
 

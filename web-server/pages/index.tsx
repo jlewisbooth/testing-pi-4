@@ -1,6 +1,5 @@
 import type { NextPage } from "next";
-import Head from "next/head";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import AnimationLayout from "../components/animation";
 import { ControlsDispatcher } from "../src/util/controls-dispatcher";
 import styled from "styled-components";

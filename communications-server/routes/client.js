@@ -59,12 +59,14 @@ router.ws("/", (ws, req) => {
   });
 
   ws.on("close", () => {
+    console.log("WS Closed");
     wsContext.stopPing();
     client.close();
   });
 
   wsContext.pingInterval = setInterval(function ping() {
     if (ws.isAlive === false) {
+      console.log("TERMINATING WS");
       wsContext.stopPing();
       return ws.terminate();
     }

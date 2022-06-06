@@ -9,7 +9,7 @@ function getSpacedPoints(points: Vector3[], numOfEqualSpaces: number) {
 
   let spacedPoints: Vector3[] = [];
 
-  for (let i = 0; i < points.length - 2; i++) {
+  for (let i = 0; i < points.length - 1; i++) {
     let dist = points[i].distanceTo(points[i + 1]);
     trackLength += dist;
 
@@ -153,7 +153,7 @@ export function parseTrackModelForPoints(
 
     let sortedPoints = laymansEuclideanGraph(startPoint, vecCoords);
 
-    let spacedPoints = getSpacedPoints(sortedPoints, 100);
+    let spacedPoints = getSpacedPoints(sortedPoints, 800);
 
     return spacedPoints;
   } else {

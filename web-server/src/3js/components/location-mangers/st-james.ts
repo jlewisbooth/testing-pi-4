@@ -9,7 +9,7 @@ export default class StJamesManager extends BaseLocation {
   }
 
   locationId: string = "ST_JAMES";
-  modelName: string = "st-james-centre-v1.gltf";
+  modelName: string = "st-james-centre-v2.gltf";
   modelPath: string = "/models/";
 
   load({

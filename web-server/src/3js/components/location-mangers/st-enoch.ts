@@ -9,7 +9,7 @@ export default class StEnochManager extends BaseLocation {
   }
 
   locationId: string = "ST_ENOCH";
-  modelName: string = "st-enoch-station-v3.gltf";
+  modelName: string = "st-enoch-station-v4.gltf";
   modelPath: string = "/models/";
 
   load({

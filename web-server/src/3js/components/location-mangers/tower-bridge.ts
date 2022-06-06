@@ -9,7 +9,7 @@ export default class TowerBridgeManager extends BaseLocation {
   }
 
   locationId: string = "TOWER_BRIDGE";
-  modelName: string = "tower-bridge-v2.gltf";
+  modelName: string = "tower-bridge-v4.gltf";
   modelPath: string = "/models/";
 
   load({

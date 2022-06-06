@@ -9,7 +9,7 @@ export default class LeedsManager extends BaseLocation {
   }
 
   locationId: string = "LEEDS";
-  modelName: string = "leeds-office-v3.gltf";
+  modelName: string = "leeds-office-v4.gltf";
   modelPath: string = "/models/";
 
   load({
