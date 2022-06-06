@@ -2,7 +2,6 @@ const express = require("express");
 const ClientConnection = require("../managers/client-connection");
 
 const router = express.Router();
-const noop = () => {};
 
 router.ws("/", (ws, req) => {
   console.log("CLIENT CONNECTION");
@@ -22,22 +21,6 @@ router.ws("/", (ws, req) => {
     status: 200,
   });
 
-  let wsContext = {
-    stopPing() {
-      if (this.pingInterval) {
-        clearInterval(this.pingInterval);
-        this.pingInterval = false;
-      }
-    },
-  };
-
-  function heartbeat() {
-    this.isAlive = true;
-  }
-
-  ws.isAlive = true;
-  ws.on("pong", heartbeat);
-
   const client = new ClientConnection();
 
   client.on("message", (packet) => {
@@ -53,31 +36,14 @@ router.ws("/", (ws, req) => {
 
   ws.on("error", (e) => {
     console.log("WS Error: ", e);
-    wsContext.stopPing();
     client.close();
     ws.terminate();
   });
 
   ws.on("close", () => {
     console.log("WS Closed");
-    wsContext.stopPing();
     client.close();
   });
-
-  wsContext.pingInterval = setInterval(function ping() {
-    if (ws.isAlive === false) {
-      console.log("TERMINATING WS");
-      wsContext.stopPing();
-      return ws.terminate();
-    }
-
-    console.log("PING WS");
-
-    ws.isAlive = false;
-    ws.ping(noop, false, (err) => {
-      console.log("PING ERROR", err);
-    });
-  }, 10e3); // 1 min
 });
 
 module.exports = router;
