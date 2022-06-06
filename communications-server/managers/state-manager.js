@@ -75,7 +75,7 @@ class StateManager {
   _handleRedisMessage(channel, msg) {
     let channelComs = channel.split("|");
 
-    console.log("STATE MANAGER", channelComs);
+    console.log("STATE MANAGER", channel, msg);
 
     if (channelComs[0] === conf.tags.fromSensor) {
       let locationId = channelComs[1];
