@@ -71,6 +71,8 @@ router.ws("/", (ws, req) => {
       return ws.terminate();
     }
 
+    console.log("PING WS");
+
     ws.isAlive = false;
     ws.ping(noop);
   }, 60e3); // 1 min
