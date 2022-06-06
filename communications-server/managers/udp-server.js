@@ -22,7 +22,8 @@ class UDPServer extends EventEmitter {
 
     this.initiateClient();
 
-    this.publishChannel = config.tags.fromSensor + "ub.model-uk.tower-bridge";
+    this.publishChannel =
+      config.tags.fromSensor + "|" + "ub.model-uk.tower-bridge";
   }
 
   async initiateClient() {
