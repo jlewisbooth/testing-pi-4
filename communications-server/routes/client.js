@@ -34,7 +34,6 @@ router.ws("/", (ws, req) => {
     console.log(msg);
 
     if (msg.type === "subscribe") {
-      console.log("CLIENT SUBSCRIBING");
       let locationId = msg.locationId;
 
       if (!!locationId) {

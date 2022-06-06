@@ -57,7 +57,7 @@ class StateManager {
 
     let channel = `${conf.tags.fromSensor}|${locationId}`;
 
-    console.log("SUBSCRIBING TO CHANNEL", channel);
+    console.log("State Manager subscribing to channel: ", channel);
 
     this.redisClient.subscribe(channel, this._handleRedisMessage.bind(this));
   }
@@ -74,6 +74,8 @@ class StateManager {
 
   _handleRedisMessage(channel, msg) {
     let channelComs = channel.split("|");
+
+    console.log("STATE MANAGER", channelComs);
 
     if (channelComs[0] === conf.tags.fromSensor) {
       let locationId = channelComs[1];
