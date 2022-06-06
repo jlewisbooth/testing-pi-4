@@ -41,9 +41,7 @@ class UDPServer extends EventEmitter {
     // only expecting packets from ub.model-uk.tower-bridge
     // msg not parsed for now
 
-    console.log("GRAM PACKET", msg.toString("binary"));
-
-    this.redisPublisher.publish(this.publishChannel, msg);
+    this.redisPublisher.publish(this.publishChannel, msg.toString("binary"));
   }
 
   sendPacket(packet) {
