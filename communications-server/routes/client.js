@@ -7,10 +7,11 @@ router.ws("/", (ws, req) => {
   console.log("CLIENT CONNECTION");
 
   function send(packet) {
+    console.log("SEND", packet);
     if (typeof packet !== "string") {
       packet = JSON.stringify(packet);
     }
-    console.log("SEND", packet);
+
     if (ws.readyState === 1) {
       ws.send(packet);
     }
