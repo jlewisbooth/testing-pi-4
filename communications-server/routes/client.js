@@ -40,8 +40,8 @@ router.ws("/", (ws, req) => {
     ws.terminate();
   });
 
-  ws.on("close", () => {
-    console.log("WS Closed");
+  ws.on("close", (e) => {
+    console.log("WS Closed", e);
     client.close();
   });
 });
