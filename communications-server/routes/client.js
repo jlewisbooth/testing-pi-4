@@ -74,8 +74,10 @@ router.ws("/", (ws, req) => {
     console.log("PING WS");
 
     ws.isAlive = false;
-    ws.ping(noop);
-  }, 60e3); // 1 min
+    ws.ping(noop, false, (err) => {
+      console.log("PING ERROR", err);
+    });
+  }, 10e3); // 1 min
 });
 
 module.exports = router;
