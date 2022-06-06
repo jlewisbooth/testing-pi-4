@@ -19,7 +19,7 @@ class ClientConnection extends EventEmitter {
     await this._ensureRedisClient();
   }
 
-  _ensureRedisClient() {
+  async _ensureRedisClient() {
     if (!this.redisClient) {
       this.redisClient = getRedisClient();
       this.redisClient.addListener(
