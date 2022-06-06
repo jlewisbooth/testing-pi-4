@@ -32,6 +32,15 @@ router.ws("/", (ws, req) => {
     msg = JSON.parse(msg);
 
     console.log(msg);
+
+    if (msg.type === "subscribe") {
+      console.log("CLIENT SUBSCRIBING");
+      let locationId = msg.locationId;
+
+      if (!!locationId) {
+        client.subscribe(locationId);
+      }
+    }
   });
 
   ws.on("error", (e) => {

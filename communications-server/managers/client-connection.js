@@ -1,13 +1,22 @@
 const redis = require("redis");
 const EventEmitter = require("events").EventEmitter;
+const conf = require("../config.json");
 
 function getRedisClient() {
   return redis.createClient();
 }
 
 class ClientConnection extends EventEmitter {
-  constructor() {
+  constructor({ clientId }) {
     super();
+
+    this.initiateClient();
+
+    this.clientId = clientId || "Unknown Client";
+  }
+
+  async initiateClient() {
+    await this._ensureRedisClient();
   }
 
   _ensureRedisClient() {
@@ -19,13 +28,37 @@ class ClientConnection extends EventEmitter {
       );
 
       this.redisPublisher = getRedisClient();
+
+      await this.redisClient.connect();
+      await this.redisPublisher.connect();
     }
   }
 
+  subscribe(locationId) {
+    if (!locationId) {
+      console.log("Can't subscribe to this location:", locationId);
+
+      return;
+    }
+
+    this._ensureRedisClient();
+
+    let channel = `${conf.tags.toClient}|${locationId}`;
+
+    console.log(`${this.clientId} subscribing to channel: `, channel);
+
+    this.redisClient.subscribe(channel, this._handleRedisMessage.bind(this));
+  }
+
   _handleRedisMessage(channel, msg) {
+    let packet = JSON.parse(msg);
+
     this.emit("message", {
-      channel,
-      packet: JSON.parse(msg),
+      locationId: channel,
+      type: packet.type,
+      data: {
+        ...packet.data,
+      },
     });
   }
 
@@ -33,6 +66,11 @@ class ClientConnection extends EventEmitter {
     if (this.redisClient) {
       this.redisClient.unsubscribe();
       this.redisClient.quit();
+    }
+
+    if (this.redisPublisher) {
+      this.redisPublisher.unsubscribe();
+      this.redisPublisher.quit();
     }
   }
 }
