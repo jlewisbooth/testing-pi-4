@@ -72,7 +72,7 @@ class StateManager {
     }
   }
 
-  _handleRedisMessage(channel, msg) {
+  _handleRedisMessage(msg, channel) {
     let channelComs = channel.split("|");
 
     console.log("STATE MANAGER", channel, msg);

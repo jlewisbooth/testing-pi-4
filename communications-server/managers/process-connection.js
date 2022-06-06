@@ -60,7 +60,7 @@ class ProcessConnection extends EventEmitter {
     }
   }
 
-  _handleRedisMessage(channel, msg) {
+  _handleRedisMessage(msg, channel) {
     let packet = JSON.parse(msg);
 
     this.emit("message", {
