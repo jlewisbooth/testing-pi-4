@@ -3,16 +3,6 @@ import processLocation from "./process-location";
 
 const log = (msg) => console.log(`ub-client :- ${msg}`);
 
-function heartbeat() {
-  clearTimeout(this.pingTimeout);
-  console.log("HEART BEAT");
-
-  this.pingTimeout = setTimeout(() => {
-    console.log("TERMINATING WS");
-    this.terminate();
-  }, 33e4);
-}
-
 class WebsocketConnection extends EventEmitter {
   constructor({
     host = "wss://utterberry.io/",
@@ -75,28 +65,22 @@ class WebsocketConnection extends EventEmitter {
     };
 
     if (this.ws.on) {
-      console.log("THERE");
       this.ws.on("open", () => {
         this.emit("connect", this);
         if (this._connectionMessage) {
           this.ws.send(this._connectionMessage);
         }
       });
-      this.ws.on("ping", heartbeat);
       this.ws.on("error", this._reconnect.bind(this));
       this.ws.on("message", this._onMessage.bind(this));
       this.ws.on("close", this._reconnect.bind(this));
     } else {
-      console.log("HERE");
       this.ws.onopen = onOpen;
       this.ws.onerror = this._reconnect.bind(this);
       this.ws.onmessage = (msg) => {
         this._onMessage(msg.data);
       };
       this.ws.onclose = this._reconnect.bind(this);
-      this.ws.addEventListener("ping", () => {
-        console.log("JUST BEEN PINGED");
-      });
     }
     return this._connectionPromise;
   }
@@ -142,15 +126,12 @@ class WebsocketConnection extends EventEmitter {
     }
 
     this.emit("packet", msg);
-    if (msg.type) {
-      this.emit(msg.type, msg);
-    }
   }
 
-  listen(clientId) {
+  listenToLocation(locationId) {
     return this.sendAtStartup({
       type: "subscribe",
-      clientId,
+      locationId,
     });
   }
 

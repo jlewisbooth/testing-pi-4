@@ -62,11 +62,11 @@ const DashboardProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
 
       client.on("connected", () => {
         console.log("CLIENT CONNECTED AND READY");
+
+        client.listenToLocation("ub.model-uk.tower-bridge");
       });
     }
   }, [client]);
-
-  console.log("CLIENT", client);
 
   return (
     <DispatcherContext.Provider
