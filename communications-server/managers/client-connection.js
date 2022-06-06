@@ -53,7 +53,10 @@ class ClientConnection extends EventEmitter {
   _handleRedisMessage(msg, channel) {
     console.log("CLIENT MESSAGE");
 
-    let packet = JSON.parse(msg);
+    let packet = msg;
+    if (typeof msg === "string") {
+      packet = JSON.parse(msg);
+    }
 
     console.log({
       locationId: channel,
