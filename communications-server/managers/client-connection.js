@@ -7,7 +7,7 @@ function getRedisClient() {
 }
 
 class ClientConnection extends EventEmitter {
-  constructor({ clientId }) {
+  constructor({ clientId } = {}) {
     super();
 
     this.initiateClient();
