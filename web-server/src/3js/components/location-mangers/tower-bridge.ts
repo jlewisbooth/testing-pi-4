@@ -27,7 +27,7 @@ export default class TowerBridgeManager extends BaseLocation {
   }
 
   locationId: string = "ub.model-uk.tower-bridge";
-  modelName: string = "tower-bridge-v5.gltf";
+  modelName: string = "tower-bridge-v6.gltf";
   modelPath: string = "/models/";
 
   towerAxis: Vector3 = new Vector3();
