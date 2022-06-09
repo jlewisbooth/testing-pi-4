@@ -143,7 +143,7 @@ export default class BaseTrain {
           }
         }
       );
-    } catch (error) {
+    } catch (error: any) {
       this.loaded = false;
       cb({
         errorMessage: error.message,
