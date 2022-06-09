@@ -15,9 +15,6 @@ import {
   CylinderGeometry,
 } from "three";
 
-// types
-import type Scene from "../scene/index";
-
 // train track parser
 import { parseTrackModelForPoints } from "./util/train-track-parser";
 
@@ -30,15 +27,14 @@ export default class TrainManager {
     this.trainLength = length || 0;
 
     this.trainObjects = {
-      front: new FrontTrain(),
       mid: new MidTrain(),
       end: new EndTrain(),
     };
   }
 
   trainLength: number = 0; // 0 is no mid carriages
-  trainObjects: { [key: string]: FrontTrain | MidTrain | EndTrain };
-  train?: (FrontTrain | MidTrain | EndTrain)[];
+  trainObjects: { [key: string]: MidTrain | EndTrain };
+  train?: (MidTrain | EndTrain)[];
   westTrackCoords?: Vector3[];
   eastTrackCoords?: Vector3[];
   sortedTrackCoords?: Vector3[];
@@ -46,7 +42,7 @@ export default class TrainManager {
 
   // animation
   progressValue: number = 0;
-  trainVelocity: number = 0.000015;
+  trainVelocity: number = 0.0000325;
   lastTimestamp: number = 0;
 
   loadCarriages({
@@ -121,7 +117,7 @@ export default class TrainManager {
   }
 
   formTrain() {
-    this.train = [this.trainObjects.front];
+    this.train = [this.trainObjects.end];
 
     for (let i = 0; i < this.trainLength; i++) {
       let trainId = `MID_TRAIN_${i}`;
@@ -132,7 +128,8 @@ export default class TrainManager {
       }
     }
 
-    this.train.push(this.trainObjects.end);
+    let endCarriage = this.trainObjects.end.clone("END_END_TRAIN");
+    this.train.push(endCarriage);
 
     return this.train;
   }
@@ -204,11 +201,11 @@ export default class TrainManager {
     // if (Array.isArray(this.westTrackCoords)) {
     //   for (let i = 0; i < this.westTrackCoords.length - 1; i++) {
     //     let color = 0xff0000 + i;
-    //     let material = new MeshBasicMaterial({ color: color });
+    //     let material = new MeshBasicMaterial({ color: 0xff0000 });
     //     let sphere = new Mesh(geometry, material);
     //     let newPosition = new Vector3(
     //       this.westTrackCoords[i].x,
-    //       this.westTrackCoords[i].y + i * 0.001,
+    //       this.westTrackCoords[i].y + 0.3,
     //       this.westTrackCoords[i].z
     //     );
     //     sphere.position.copy(newPosition);
@@ -219,11 +216,11 @@ export default class TrainManager {
     // if (Array.isArray(this.eastTrackCoords)) {
     //   for (let i = 0; i < this.eastTrackCoords.length - 1; i++) {
     //     let color = 0xffff00 + i;
-    //     let material = new MeshBasicMaterial({ color: color });
+    //     let material = new MeshBasicMaterial({ color: 0xff0000 });
     //     let sphere = new Mesh(geometry, material);
     //     let newPosition = new Vector3(
     //       this.eastTrackCoords[i].x,
-    //       this.eastTrackCoords[i].y + i * 0.001,
+    //       this.eastTrackCoords[i].y + 0.3,
     //       this.eastTrackCoords[i].z
     //     );
     //     sphere.position.copy(newPosition);
@@ -287,8 +284,14 @@ export default class TrainManager {
     // parentModel.add(curveObject);
   }
 
-  trainSpacingMid: number = 0.0145;
-  trainSpacingEnd: number = 0.0287;
+  trainSpacingMid: number = 0.0147;
+  trainSpacingEnd: number = 0.0293;
+
+  updateTrainPosition(progress: number) {
+    if (typeof progress === "number" && progress < 1 && progress > 0) {
+      this.progressValue = progress;
+    }
+  }
 
   animate(timestamp: number) {
     let dt = timestamp - this.lastTimestamp;
@@ -305,7 +308,7 @@ export default class TrainManager {
 
         for (let i = 0; i < this.train.length; i++) {
           let carriage = this.train[i];
-          if (carriage.trainId === "FRONT_TRAIN") {
+          if (carriage.trainId === "END_TRAIN") {
             carriage.moveTo(newPosition);
             carriage.rotateFromAxisAngle(axis, radians);
           }
@@ -327,7 +330,7 @@ export default class TrainManager {
             carriage.rotateFromAxisAngle(midAxis, midRadians);
           }
 
-          if (carriage.trainId === "END_TRAIN") {
+          if (carriage.trainId === "END_END_TRAIN") {
             let endFraction =
               this.progressValue -
                 ((this.trainLength - 1) * this.trainSpacingMid +
@@ -349,7 +352,7 @@ export default class TrainManager {
             let endRadians = Math.acos(up.dot(endTagent));
 
             carriage.moveTo(endPosition);
-            carriage.rotateFromAxisAngle(endAxis, endRadians);
+            carriage.rotateFromAxisAngle(endAxis, endRadians + Math.PI);
           }
         }
       }

@@ -1,11 +1,13 @@
 import * as THREE from "three";
 import { Object3D, Mesh, Scene as ThreeScene, Vector3 } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import Stats from "three/examples/jsm/libs/stats.module";
 
 // scene classes
 import Camera from "./camera";
 import Renderer from "./renderer";
 import Lighting from "./lighting";
+import RoomEnvironment from "./room-environment";
 
 type ControlOpts = {
   autoRotate?: boolean;
@@ -34,10 +36,15 @@ export default class Scene {
     this.container = container;
     this.backgroundColour = backgroundColour;
 
+    this.stats = Stats();
+    document.body.appendChild(this.stats.dom);
+
     this.scene = new ThreeScene();
-    this.scene.background = backgroundColour
-      ? new THREE.Color(backgroundColour)
-      : null;
+    // this.scene.overrideMaterial = new THREE.MeshBasicMaterial();
+
+    // this.scene.background = backgroundColour
+    //   ? new THREE.Color(backgroundColour)
+    //   : null;
 
     this.lighting = new Lighting({ scene: this.scene });
 
@@ -65,7 +72,14 @@ export default class Scene {
       far: 10000,
     });
 
-    this.toggleHelpers();
+    // add room environment
+    this.room = new RoomEnvironment({
+      scene: this.scene,
+    });
+
+    this.scene.add(this.room);
+
+    // this.toggleHelpers();
 
     window.addEventListener(
       "resize",
@@ -89,12 +103,14 @@ export default class Scene {
   height: number;
   backgroundColour?: string | number;
   scene?: ThreeScene;
+  room?: RoomEnvironment;
   camera?: Camera;
   perspectiveCameras: Camera[] = [];
   renderer?: Renderer;
   lighting?: Lighting;
   ctrls?: OrbitControls;
   ctrlsTarget?: Vector3;
+  stats?: Stats;
 
   addToScene(model: Object3D | Mesh): boolean {
     if (model) {
@@ -112,6 +128,10 @@ export default class Scene {
     if (render) {
       if (this.ctrls) {
         this.ctrls.update();
+      }
+
+      if (this.stats) {
+        this.stats.update();
       }
 
       let width = this.camera?.width || this.width;

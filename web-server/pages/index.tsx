@@ -1,7 +1,5 @@
 import type { NextPage } from "next";
-import { useState } from "react";
 import AnimationLayout from "../components/animation";
-import { ControlsDispatcher } from "../src/util/controls-dispatcher";
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -18,12 +16,10 @@ const ContentContainer = styled.main`
 `;
 
 const Home: NextPage = () => {
-  const [controlsDispatcher] = useState(new ControlsDispatcher());
-
   return (
     <Container>
       <ContentContainer>
-        <AnimationLayout controlsDispatcher={controlsDispatcher} />
+        <AnimationLayout />
       </ContentContainer>
     </Container>
   );

@@ -1,4 +1,11 @@
-import { WebGLRenderer, Scene, Camera, PCFSoftShadowMap } from "three";
+import {
+  WebGLRenderer,
+  Scene,
+  Camera,
+  PCFSoftShadowMap,
+  PCFShadowMap,
+  ReinhardToneMapping,
+} from "three";
 
 export default class Renderer {
   constructor({
@@ -14,6 +21,7 @@ export default class Renderer {
     this.renderer = new WebGLRenderer({
       antialias: true,
       alpha: true,
+      powerPreference: "high-performance",
     });
 
     this.renderer.setPixelRatio(window.devicePixelRatio);
@@ -21,8 +29,11 @@ export default class Renderer {
       width || window.innerWidth,
       height || window.innerHeight
     );
+    this.renderer.physicallyCorrectLights = true;
 
     this.renderer.setClearColor(0xffffff, 0);
+    this.renderer.toneMapping = ReinhardToneMapping;
+
     this.container.appendChild(this.renderer.domElement);
   }
 
@@ -36,6 +47,8 @@ export default class Renderer {
 
   render(scene: Scene, camera: Camera) {
     this.renderer?.render(scene, camera);
+
+    // console.log(this.renderer?.info.render);
   }
 
   cut(left: number, top: number, width: number, height: number) {

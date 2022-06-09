@@ -1,10 +1,11 @@
 import BaseLocation from "./base-location";
 import { Mesh, Object3D } from "three";
+import type { ControlsDispatcher } from "../../../util/controls-dispatcher";
 
 import TrainManager from "../trains/train-manager";
 
 function isMesh(e: any): e is Mesh {
-  return typeof e === "object" && e.geometry && e.material;
+  return e && typeof e === "object" && e.geometry && e.material;
 }
 
 export default class UKMapManager extends BaseLocation {
@@ -18,11 +19,16 @@ export default class UKMapManager extends BaseLocation {
     });
   }
 
-  locationId: string = "UK_MAP";
-  modelName: string = "uk-map-updated-track-v1.gltf";
+  locationId: string = "ub.model-uk.uk-map";
+  modelName: string = "uk-map-with-legs.gltf";
   modelPath: string = "/models/";
 
   trainManager?: TrainManager;
+
+  tofDiscriminator: string = "=>tof";
+  leedsId: string = "ub.model-uk.leeds";
+  towerBridgeId: string = "ub.model-uk.tower-bridge";
+  glasgowStationId: string = "ub.model-uk.glasgow-station";
 
   load({
     loader,
@@ -47,17 +53,19 @@ export default class UKMapManager extends BaseLocation {
 
           // this model has mixed up west and east
           model?.traverse((child) => {
+            child.matrixAutoUpdate = false;
+
             if (child.name === "east-track" && isMesh(child)) {
               eastTrainTrack = child;
             }
             if (child.name === "west-track" && isMesh(child)) {
               westTrainTrack = child;
             }
+
+            child.updateMatrix();
           });
 
           if (isMesh(westTrainTrack) && isMesh(eastTrainTrack)) {
-            console.log(westTrainTrack);
-
             westTrainTrack.visible = false;
             eastTrainTrack.visible = false;
 
@@ -103,5 +111,57 @@ export default class UKMapManager extends BaseLocation {
 
   animate(timestamp: number) {
     this.trainManager?.animate(timestamp);
+  }
+
+  setUpDispatcher(dispatcher: ControlsDispatcher) {
+    if (dispatcher) {
+      dispatcher.addEventListener(
+        this.leedsId + this.tofDiscriminator,
+        ({ packet }: { packet: any }) => {
+          if (packet.locationId === this.leedsId && packet.type === "tof") {
+            let data = packet.data;
+
+            if (data.side === "west" && data.present) {
+              this.trainManager?.updateTrainPosition(0.675);
+            }
+            if (data.side === "east" && data.present) {
+              this.trainManager?.updateTrainPosition(0.265);
+            }
+          }
+        }
+      );
+
+      dispatcher.addEventListener(
+        this.towerBridgeId + this.tofDiscriminator,
+        ({ packet }: { packet: any }) => {
+          if (
+            packet.locationId === this.towerBridgeId &&
+            packet.type === "tof"
+          ) {
+            let data = packet.data;
+
+            if (data.present) {
+              this.trainManager?.updateTrainPosition(0.41);
+            }
+          }
+        }
+      );
+
+      dispatcher.addEventListener(
+        this.glasgowStationId + this.tofDiscriminator,
+        ({ packet }: { packet: any }) => {
+          if (
+            packet.locationId === this.glasgowStationId &&
+            packet.type === "tof"
+          ) {
+            let data = packet.data;
+
+            if (data.present) {
+              this.trainManager?.updateTrainPosition(0.815);
+            }
+          }
+        }
+      );
+    }
   }
 }

@@ -5,7 +5,7 @@ function getSpacedPoints(points: Vector3[], numOfEqualSpaces: number) {
 
   // first find the total length of the track
   let trackLength: number = 0;
-  let pointDistances: number[] = [];
+  let pointDistances: number[] = [0];
 
   let spacedPoints: Vector3[] = [];
 
@@ -19,15 +19,19 @@ function getSpacedPoints(points: Vector3[], numOfEqualSpaces: number) {
   let pointDistance = trackLength / numOfEqualSpaces;
   let distanceCovered = 0;
   let lastSpacedNode: Vector3 = points[0];
+  let spacedPoint: Vector3 = points[0];
 
-  for (let i = 1; i < pointDistances.length; i++) {
+  spacedPoints.push(spacedPoint);
+
+  for (let i = 0; i < pointDistances.length; i++) {
     // dist is the distance between i+1 and i
-    let dis = pointDistances[i - 1];
+    let dis = pointDistances[i];
     distanceCovered += dis;
 
     if (distanceCovered > pointDistance) {
       // add steps between points to cover distance
       let step = 1;
+
       while (distanceCovered > pointDistance) {
         let node1 = lastSpacedNode;
         let node2 = points[i];
@@ -38,7 +42,7 @@ function getSpacedPoints(points: Vector3[], numOfEqualSpaces: number) {
           node2.z - node1.z
         ).normalize();
 
-        let spacedPoint = new Vector3(
+        spacedPoint = new Vector3(
           direction.x * pointDistance * step + node1.x,
           direction.y * pointDistance * step + node1.y,
           direction.z * pointDistance * step + node1.z
@@ -49,7 +53,7 @@ function getSpacedPoints(points: Vector3[], numOfEqualSpaces: number) {
         step++;
       }
 
-      lastSpacedNode = points[i];
+      lastSpacedNode = spacedPoint;
     }
   }
 

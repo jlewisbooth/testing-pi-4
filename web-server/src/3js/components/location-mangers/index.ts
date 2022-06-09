@@ -67,6 +67,14 @@ export default class LocationManager {
     });
   }
 
+  setUpDispatchers(dispatcher: ControlsDispatcher) {
+    Object.values(this.managers).forEach((manager) => {
+      if (typeof manager.setUpDispatcher === "function") {
+        manager.setUpDispatcher(dispatcher);
+      }
+    });
+  }
+
   animate(timestamp?: number) {
     if (typeof timestamp === "number") {
       Object.values(this.managers).forEach((manager) => {

@@ -4,26 +4,27 @@ import {
   Vector3,
   AmbientLight,
   PointLight,
+  CameraHelper,
 } from "three";
 
 export default class Lighting {
   constructor({ scene }: { scene: Scene }) {
     this.scene = scene;
 
-    this.addDirectionalLight({
-      x: -100,
-      y: 100,
-      z: 100,
-      name: "main",
-      d: 200,
-      far: 500,
-      near: 0,
-    });
+    // this.addDirectionalLight({
+    //   x: -30,
+    //   y: 30,
+    //   z: 30,
+    //   name: "main",
+    //   d: 70,
+    //   far: 100,
+    //   near: 0,
+    // });
 
-    this.addAmbientLight({
-      intensity: 0.5,
-      name: "ambient",
-    });
+    // this.addAmbientLight({
+    //   intensity: 0.6,
+    //   name: "ambient",
+    // });
   }
 
   lights?: { [key: string]: DirectionalLight | PointLight | AmbientLight } = {};
@@ -61,15 +62,15 @@ export default class Lighting {
     far: number;
     near: number;
   }) {
-    let directionalLight = new DirectionalLight(0xffffff, 2);
+    let directionalLight = new DirectionalLight(0xffffff, 8);
     directionalLight.castShadow = true;
     directionalLight.shadow.camera.bottom = -d || -100;
     directionalLight.shadow.camera.top = d || 100;
     directionalLight.shadow.camera.right = d || 100;
     directionalLight.shadow.camera.left = -d || -100;
     directionalLight.shadow.camera.far = far || 500000;
-    directionalLight.shadow.mapSize.width = 4096;
-    directionalLight.shadow.mapSize.height = 4096;
+    directionalLight.shadow.mapSize.width = 4096 / 2;
+    directionalLight.shadow.mapSize.height = 4096 / 2;
     directionalLight.shadow.camera.near = near || 0;
     directionalLight.position.copy(new Vector3(x || 100, y || 100, z || 100));
 
@@ -78,6 +79,9 @@ export default class Lighting {
     }
 
     this.scene?.add(directionalLight);
+
+    const helper = new CameraHelper(directionalLight.shadow.camera);
+    this.scene?.add(helper);
   }
 
   addAmbientLight({ intensity, name }: { intensity: number; name: string }) {

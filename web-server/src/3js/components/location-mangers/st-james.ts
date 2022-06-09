@@ -32,6 +32,11 @@ export default class StJamesManager extends BaseLocation {
         // move model to correct position
         model?.position.copy(new Vector3(4, 0, -19.5));
 
+        model?.traverse((child) => {
+          child.matrixAutoUpdate = false;
+          child.updateMatrix();
+        });
+
         cb({
           errorMessage,
           model,

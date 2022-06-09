@@ -32,6 +32,11 @@ export default class RaglanCastleManager extends BaseLocation {
         // move model to correct position
         model?.position.copy(new Vector3(-7, 0.6, 42));
 
+        model?.traverse((child) => {
+          child.matrixAutoUpdate = false;
+          child.updateMatrix();
+        });
+
         cb({
           errorMessage,
           model,

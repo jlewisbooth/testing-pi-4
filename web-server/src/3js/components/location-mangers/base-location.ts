@@ -7,6 +7,7 @@ import {
   Camera,
   Vector3,
 } from "three";
+import type { ControlsDispatcher } from "../../../util/controls-dispatcher";
 
 interface GLTF {
   animations: AnimationClip[];
@@ -150,6 +151,8 @@ export default class BaseLocation {
   getModel() {
     return this.model || null;
   }
+
+  setUpDispatcher(dispatcher: ControlsDispatcher) {}
 
   animate(timestamp: number) {}
 }

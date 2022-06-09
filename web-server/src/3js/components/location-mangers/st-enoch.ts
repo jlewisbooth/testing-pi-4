@@ -9,7 +9,7 @@ export default class StEnochManager extends BaseLocation {
   }
 
   locationId: string = "ST_ENOCH";
-  modelName: string = "st-enoch-station-v4.gltf";
+  modelName: string = "st-enoch-station-v5.gltf";
   modelPath: string = "/models/";
 
   load({
@@ -30,7 +30,12 @@ export default class StEnochManager extends BaseLocation {
       loader,
       cb: ({ errorMessage, model }) => {
         // move model to correct position
-        model?.position.copy(new Vector3(-14.5, 2.6, -25));
+        model?.position.copy(new Vector3(-16.4, 3.2, -23.5));
+
+        model?.traverse((child) => {
+          child.matrixAutoUpdate = false;
+          child.updateMatrix();
+        });
 
         cb({
           errorMessage,

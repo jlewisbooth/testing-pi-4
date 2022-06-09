@@ -10,7 +10,7 @@ export default class EndTrainManager extends BaseTrain {
   }
 
   trainId: string = "END_TRAIN";
-  modelName: string = "back-train-v1.gltf";
+  modelName: string = "fb-train-v1.gltf";
   modelPath: string = "/models/";
 
   load({
@@ -31,7 +31,7 @@ export default class EndTrainManager extends BaseTrain {
       loader,
       cb: ({ errorMessage, model }) => {
         // move model to correct position
-        // model?.position.copy(new Vector3(-14.5, 2.6, -25));
+        model?.rotation.set(0, Math.PI, 0);
 
         cb({
           errorMessage,
@@ -41,11 +41,13 @@ export default class EndTrainManager extends BaseTrain {
     });
   }
 
-  clone(trainId: string) {
+  clone(trainId: string, rotation?: number) {
     let clone = new EndTrainManager();
     clone.model.name = trainId || this.trainId;
     clone.model = this.model.clone();
     clone.loaded = true;
+    clone.trainId = trainId || this.trainId;
+    clone.model.rotation.set(0, rotation || 0, 0);
 
     return clone;
   }

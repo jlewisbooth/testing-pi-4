@@ -10,7 +10,7 @@ export default class MidTrainManager extends BaseTrain {
   }
 
   trainId: string = "MID_TRAIN";
-  modelName: string = "mid-train-v1.gltf";
+  modelName: string = "mid-train-v2.gltf";
   modelPath: string = "/models/";
 
   load({
@@ -31,7 +31,6 @@ export default class MidTrainManager extends BaseTrain {
       loader,
       cb: ({ errorMessage, model }) => {
         // move model to correct position
-        // model?.position.copy(new Vector3(-14.5, 2.6, -25));
 
         cb({
           errorMessage,

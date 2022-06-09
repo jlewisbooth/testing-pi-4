@@ -50,10 +50,10 @@ export default class MainController {
       controlsListener: this.ctrlsContainer,
       enablePan: true,
       enableZoom: true,
-      maxDistance: 500,
-      minDistance: 40,
-      // maxPolarAngle: Math.PI / 2 - Math.PI / 32,
-      // minPolarAngle: -Math.PI / 2,
+      maxDistance: 170,
+      minDistance: 20,
+      maxPolarAngle: Math.PI / 2 - Math.PI / 32,
+      minPolarAngle: -Math.PI / 2,
     });
   }
 
@@ -66,6 +66,7 @@ export default class MainController {
 
     if (this.scene) {
       this.locationManager.addModelsToScene(this.scene);
+      this.locationManager.setUpDispatchers(this.controlsDispatcher);
     }
   }
 

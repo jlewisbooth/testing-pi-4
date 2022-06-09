@@ -48,7 +48,6 @@ class WebsocketConnection extends EventEmitter {
 
     if (this.ws && this.ws.removeAllListeners) {
       this.ws.removeAllListeners();
-      clearTimeout(this.ws.pingTimeout);
     }
 
     if (this._debug) {
@@ -241,6 +240,18 @@ class WebsocketConnection extends EventEmitter {
     });
     if (oldStartupPromResolve) {
       this._startupMsgsPromise.then(oldStartupPromResolve);
+    }
+  }
+
+  close() {
+    this._disconnect();
+
+    if (this.ws && this.ws.removeAllListeners) {
+      this.ws.removeAllListeners();
+    }
+
+    if (this.ws) {
+      this.ws.close();
     }
   }
 }

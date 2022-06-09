@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import ThreeController from "../../src/3js/controllers/main-controller";
+import Context from "../context/dispatcher";
 
 import styled from "styled-components";
 
@@ -18,9 +19,7 @@ const Container = styled.div`
   position: relative;
 `;
 
-interface Props {
-  controlsDispatcher: any;
-}
+interface Props {}
 
 export declare type AnimationLayoutProps = React.PropsWithChildren<Props>;
 
@@ -30,11 +29,13 @@ export const AnimationLayout: React.FC<AnimationLayoutProps> = (props) => {
 
   const [controller, setController] = useState<ThreeController | null>(null);
 
+  const controlsDispatcher = useContext(Context).controlsDispatcher;
+
   useEffect(() => {
     let c = new ThreeController({
       animationContainer: animatedRef.current,
       ctrlsContainer: ctrlsRef.current,
-      controlsDispatcher: props.controlsDispatcher,
+      controlsDispatcher: controlsDispatcher,
     });
 
     setController(c);

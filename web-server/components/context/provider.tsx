@@ -8,6 +8,7 @@ import React, {
 import DispatcherContext from "./dispatcher";
 import { notification } from "antd";
 import WebsocketConnection from "../../src/util/ws-connection";
+import { ControlsDispatcher } from "../../src/util/controls-dispatcher";
 
 const openNotificationWithIcon = ({
   type,
@@ -41,29 +42,43 @@ function parseQuery(queryString: string) {
 
 const DashboardProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
   const [client, setClient] = useState<any>(null);
+  const [controlsDispatcher] = useState(new ControlsDispatcher());
 
   useEffect(() => {
-    setClient(
-      new WebsocketConnection({
-        host: "modeluk.local",
-        path: "data-stream/client",
-        secure: false,
-        debug: true,
-        verbose: true,
-      })
-    );
+    let connection = new WebsocketConnection({
+      host: "modeluk.local",
+      path: "data-stream/client",
+      secure: false,
+      debug: true,
+      verbose: true,
+    });
+
+    setClient(connection);
+
+    return () => {
+      connection.close();
+    };
   }, []);
 
   useEffect(() => {
     if (client) {
       let queryParameters = parseQuery(window.location.search);
 
-      console.log("QUERY", queryParameters);
-
       client.on("connected", () => {
-        console.log("CLIENT CONNECTED AND READY");
-
         client.listenToLocation("ub.model-uk.tower-bridge");
+        client.listenToLocation("ub.model-uk.leeds");
+        client.listenToLocation("ub.model-uk.glasgow-station");
+      });
+
+      client.on("packet", (msg: { [key: string]: any }) => {
+        let locationId = msg.locationId;
+
+        if (!!locationId && !!msg.type) {
+          controlsDispatcher.dispatchEvent({
+            type: locationId + "=>" + msg.type,
+            packet: msg,
+          });
+        }
       });
     }
   }, [client]);
@@ -71,7 +86,8 @@ const DashboardProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
   return (
     <DispatcherContext.Provider
       value={{
-        client: client,
+        client,
+        controlsDispatcher,
       }}
     >
       {props.children}
