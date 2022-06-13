@@ -9,7 +9,7 @@ export default class RaglanCastleManager extends BaseLocation {
   }
 
   locationId: string = "RAGLAN_CASTLE";
-  modelName: string = "raglan-castle-v1.gltf";
+  modelName: string = "raglan-castle-v2.gltf";
   modelPath: string = "/models/";
 
   load({
