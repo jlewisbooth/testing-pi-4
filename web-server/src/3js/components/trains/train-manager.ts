@@ -42,7 +42,7 @@ export default class TrainManager {
 
   // animation
   progressValue: number = 0;
-  trainVelocity: number = 0.0000325;
+  trainVelocity: number = 0.0000285;
   lastTimestamp: number = 0;
 
   loadCarriages({

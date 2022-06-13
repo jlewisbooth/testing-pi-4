@@ -288,4 +288,8 @@ export default class Scene {
       }
     }
   }
+
+  getCamera() {
+    return this.camera;
+  }
 }

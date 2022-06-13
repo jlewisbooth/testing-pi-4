@@ -1,7 +1,7 @@
 import Scene from "../components/scene";
 import type { ControlsDispatcher } from "../../util/controls-dispatcher";
 import * as THREE from "three";
-
+import CameraController from "./camera-controller";
 import LocationManager from "../components/location-mangers";
 
 export default class MainController {
@@ -55,6 +55,14 @@ export default class MainController {
       maxPolarAngle: Math.PI / 2 - Math.PI / 32,
       minPolarAngle: -Math.PI / 2,
     });
+
+    let camera = this.scene.getCamera();
+
+    if (camera) {
+      this.cameraController = new CameraController({
+        camera: camera,
+      });
+    }
   }
 
   async initiateLocations() {
@@ -72,6 +80,7 @@ export default class MainController {
 
   setUpListeners() {}
 
+  cameraController?: CameraController;
   animateCallback?: (timestamp?: number) => void;
   animationId?: number;
 

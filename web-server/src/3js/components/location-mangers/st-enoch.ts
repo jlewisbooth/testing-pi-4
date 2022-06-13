@@ -30,7 +30,8 @@ export default class StEnochManager extends BaseLocation {
       loader,
       cb: ({ errorMessage, model }) => {
         // move model to correct position
-        model?.position.copy(new Vector3(-16.4, 3.2, -23.5));
+        model?.position.copy(new Vector3(-15.2, 3.2, -21.5));
+        model?.rotateY(Math.PI / 64);
 
         model?.traverse((child) => {
           child.matrixAutoUpdate = false;
