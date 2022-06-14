@@ -9,6 +9,8 @@ import {
 } from "three";
 import type { ControlsDispatcher } from "../../../util/controls-dispatcher";
 
+import type { SelectiveBloomEffect } from "postprocessing";
+
 interface GLTF {
   animations: AnimationClip[];
   scene: Group;
@@ -152,7 +154,17 @@ export default class BaseLocation {
     return this.model || null;
   }
 
+  getPosition(): Vector3 {
+    return new Vector3();
+  }
+
+  getCameraPosition(): Vector3 {
+    return new Vector3();
+  }
+
   setUpDispatcher(dispatcher: ControlsDispatcher) {}
 
   animate(timestamp: number) {}
+
+  initBloomEffect(bloomEffect: SelectiveBloomEffect) {}
 }

@@ -1,5 +1,5 @@
 import BaseLocation from "./base-location";
-import { Mesh, Object3D } from "three";
+import { Mesh, Object3D, Vector3 } from "three";
 import type { ControlsDispatcher } from "../../../util/controls-dispatcher";
 
 import TrainManager from "../trains/train-manager";
@@ -163,5 +163,13 @@ export default class UKMapManager extends BaseLocation {
         }
       );
     }
+  }
+
+  getPosition() {
+    return new Vector3(0, 0, 0);
+  }
+
+  getCameraPosition() {
+    return new Vector3(-60, 60, 140);
   }
 }

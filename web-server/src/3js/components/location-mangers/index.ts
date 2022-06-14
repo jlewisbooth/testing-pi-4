@@ -82,4 +82,8 @@ export default class LocationManager {
       });
     }
   }
+
+  getManagers() {
+    return Object.values(this.managers);
+  }
 }

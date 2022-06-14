@@ -50,17 +50,20 @@ export default class MainController {
       controlsListener: this.ctrlsContainer,
       enablePan: true,
       enableZoom: true,
-      maxDistance: 170,
+      maxDistance: 165,
       minDistance: 20,
       maxPolarAngle: Math.PI / 2 - Math.PI / 32,
       minPolarAngle: -Math.PI / 2,
+      // autoRotate: true,
     });
 
     let camera = this.scene.getCamera();
+    let controls = this.scene.getControls();
 
-    if (camera) {
+    if (camera && controls) {
       this.cameraController = new CameraController({
         camera: camera,
+        controls: controls,
       });
     }
   }
@@ -75,10 +78,64 @@ export default class MainController {
     if (this.scene) {
       this.locationManager.addModelsToScene(this.scene);
       this.locationManager.setUpDispatchers(this.controlsDispatcher);
+
+      let locations = this.locationManager.getManagers();
+      if (
+        Array.isArray(locations) &&
+        locations.length > 0 &&
+        this.cameraController
+      ) {
+        for (let location of locations) {
+          this.cameraController.addLocation(location);
+
+          let bloomEffect = this.scene.getBloomEffect();
+          if (bloomEffect) {
+            location.initBloomEffect(bloomEffect, this.scene);
+          }
+        }
+      }
     }
   }
 
-  setUpListeners() {}
+  setUpListeners() {
+    this.controlsDispatcher.addEventListener(
+      "change-location",
+      (message: any) => {
+        let locationId = message.locationId;
+
+        if (locationId === "ub.model-uk.tower-bridge") {
+          if (this.cameraController) {
+            this.cameraController.jumpTo("ub.model-uk.tower-bridge", true);
+          }
+        }
+        if (locationId === "ub.model-uk.uk-map") {
+          if (this.cameraController) {
+            this.cameraController.jumpTo("ub.model-uk.uk-map", false);
+          }
+        }
+        if (locationId === "ub.model-uk.raglan-castle") {
+          if (this.cameraController) {
+            this.cameraController.jumpTo("ub.model-uk.raglan-castle", true);
+          }
+        }
+        if (locationId === "ub.model-uk.leeds") {
+          if (this.cameraController) {
+            this.cameraController.jumpTo("ub.model-uk.leeds", true);
+          }
+        }
+        if (locationId === "ub.model-uk.glasgow-station") {
+          if (this.cameraController) {
+            this.cameraController.jumpTo("ub.model-uk.glasgow-station", true);
+          }
+        }
+        if (locationId === "ub.model-uk.st-james") {
+          if (this.cameraController) {
+            this.cameraController.jumpTo("ub.model-uk.st-james", true);
+          }
+        }
+      }
+    );
+  }
 
   cameraController?: CameraController;
   animateCallback?: (timestamp?: number) => void;
@@ -93,6 +150,10 @@ export default class MainController {
 
       if (this.locationManager) {
         this.locationManager.animate(timestamp);
+      }
+
+      if (this.cameraController) {
+        this.cameraController.update(timestamp);
       }
 
       if (this.animateCallback) {

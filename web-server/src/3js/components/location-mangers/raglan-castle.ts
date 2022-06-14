@@ -1,5 +1,5 @@
 import BaseLocation from "./base-location";
-import { Object3D, Vector3 } from "three";
+import { Object3D, Vector3, Box3 } from "three";
 
 export default class RaglanCastleManager extends BaseLocation {
   constructor() {
@@ -8,7 +8,7 @@ export default class RaglanCastleManager extends BaseLocation {
     });
   }
 
-  locationId: string = "RAGLAN_CASTLE";
+  locationId: string = "ub.model-uk.raglan-castle";
   modelName: string = "raglan-castle-v2.gltf";
   modelPath: string = "/models/";
 
@@ -43,5 +43,17 @@ export default class RaglanCastleManager extends BaseLocation {
         });
       },
     });
+  }
+
+  getPosition() {
+    return new Vector3(
+      -8.911333461367494,
+      2.419868311747201,
+      41.267867122399075
+    );
+  }
+
+  getCameraPosition() {
+    return new Vector3(-11.911333461367494, 15, 64);
   }
 }

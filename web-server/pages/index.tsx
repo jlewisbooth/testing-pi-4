@@ -1,5 +1,6 @@
 import type { NextPage } from "next";
 import AnimationLayout from "../components/animation";
+import Infographics from "../components/infographics";
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -20,6 +21,7 @@ const Home: NextPage = () => {
     <Container>
       <ContentContainer>
         <AnimationLayout />
+        <Infographics />
       </ContentContainer>
     </Container>
   );

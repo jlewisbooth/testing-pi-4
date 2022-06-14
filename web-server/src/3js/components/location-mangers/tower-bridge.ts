@@ -1,6 +1,17 @@
 import BaseLocation from "./base-location";
-import { Mesh, Object3D, SphereGeometry, Vector3 } from "three";
+import {
+  Object3D,
+  SphereBufferGeometry,
+  MeshBasicMaterial,
+  Mesh,
+  CylinderBufferGeometry,
+  Vector3,
+} from "three";
 import type { ControlsDispatcher } from "../../../util/controls-dispatcher";
+
+import type Scene from "../scene";
+
+import type { SelectiveBloomEffect } from "postprocessing";
 
 function isMesh(e: any): e is Mesh {
   return typeof e === "object" && e.geometry && e.material;
@@ -29,6 +40,8 @@ export default class TowerBridgeManager extends BaseLocation {
   locationId: string = "ub.model-uk.tower-bridge";
   modelName: string = "tower-bridge-v6.gltf";
   modelPath: string = "/models/";
+
+  tofDiscriminator: string = "=>tof";
 
   towerAxis: Vector3 = new Vector3();
 
@@ -102,12 +115,6 @@ export default class TowerBridgeManager extends BaseLocation {
           if (child.name === this.rightBasculeId) {
             this.rightBascule = child;
             this.recenterMesh(this.rightBascule, -0.11, -0.05, -0.025);
-
-            // const geometry = new SphereGeometry(0.02, 20, 32);
-            // const material = new MeshBasicMaterial({ color: 0xffff00 });
-            // const cylinder = new Mesh(geometry, material);
-
-            // this.rightBascule.add(cylinder);
           }
         });
 
@@ -127,6 +134,40 @@ export default class TowerBridgeManager extends BaseLocation {
     });
   }
 
+  tunnelLight?: Mesh;
+  selection?: any;
+
+  initBloomEffect(bloomEffect: SelectiveBloomEffect, scene?: Scene) {
+    this.selection = bloomEffect.selection;
+
+    const bulbGeometry = new SphereBufferGeometry(0.26, 32, 16);
+    const bulbMaterial = new MeshBasicMaterial({ color: 0xff0000 });
+
+    this.tunnelLight = new Mesh(bulbGeometry, bulbMaterial);
+
+    let poleHeight = 1;
+    const poleGeometry = new CylinderBufferGeometry(0.1, 0.1, poleHeight);
+
+    poleGeometry.translate(0, -poleHeight / 2, 0);
+
+    const poleMaterial = new MeshBasicMaterial({ color: 0x000000 });
+
+    let pole = new Mesh(poleGeometry, poleMaterial);
+
+    let trainIndicator = new Object3D();
+
+    trainIndicator.add(pole);
+    trainIndicator.add(this.tunnelLight);
+
+    trainIndicator.position.set(33.4, 5.9, 44);
+
+    if (scene) {
+      scene.addToScene(trainIndicator);
+    }
+
+    // selection.add(this.eastTunnelLight);
+  }
+
   setUpDispatcher(dispatcher: ControlsDispatcher) {
     if (dispatcher) {
       dispatcher.addEventListener(
@@ -135,6 +176,22 @@ export default class TowerBridgeManager extends BaseLocation {
           if (packet.locationId === this.locationId && packet.type === "tilt") {
             let data = packet.data;
             this.onPacket(data);
+          }
+        }
+      );
+
+      dispatcher.addEventListener(
+        this.locationId + this.tofDiscriminator,
+        ({ packet }: { packet: any }) => {
+          if (packet.locationId === this.locationId && packet.type === "tof") {
+            let data = packet.data;
+
+            if (data.side === "all" && data.present && this.selection) {
+              this.selection.add(this.tunnelLight);
+            }
+            if (data.side === "all" && !data.present && this.selection) {
+              this.selection.delete(this.tunnelLight);
+            }
           }
         }
       );
@@ -182,5 +239,13 @@ export default class TowerBridgeManager extends BaseLocation {
     obj.translateX(-x);
     obj.translateY(-y);
     obj.translateZ(-z);
+  }
+
+  getPosition() {
+    return new Vector3(23, 7, 50);
+  }
+
+  getCameraPosition() {
+    return new Vector3(18, 17, 74);
   }
 }

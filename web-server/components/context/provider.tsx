@@ -28,6 +28,50 @@ const openNotificationWithIcon = ({
   });
 };
 
+type Location = {
+  title: string;
+  locationId: string;
+  bgImage?: string;
+  isTrainStop?: boolean;
+  hideDetails?: boolean;
+};
+
+const LOCATIONS: Location[] = [
+  {
+    title: "Room UK",
+    locationId: "ub.model-uk.uk-map",
+    hideDetails: true,
+  },
+  {
+    title: "Tower Bridge",
+    locationId: "ub.model-uk.tower-bridge",
+    bgImage: "/img/tower-bridge.png",
+    isTrainStop: true,
+  },
+  {
+    title: "Raglan Castle",
+    locationId: "ub.model-uk.raglan-castle",
+    bgImage: "/img/raglan-castle.png",
+  },
+  {
+    title: "Leeds",
+    locationId: "ub.model-uk.leeds",
+    bgImage: "/img/leeds.png",
+    isTrainStop: true,
+  },
+  {
+    title: "Glasgow Station",
+    locationId: "ub.model-uk.glasgow-station",
+    bgImage: "/img/glasgow-station.png",
+    isTrainStop: true,
+  },
+  {
+    title: "St James Centre",
+    locationId: "ub.model-uk.st-james",
+    bgImage: "/img/st-james.png",
+  },
+];
+
 function parseQuery(queryString: string) {
   var query: { [key: string]: string } = {};
   var pairs = (
@@ -43,6 +87,14 @@ function parseQuery(queryString: string) {
 const DashboardProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
   const [client, setClient] = useState<any>(null);
   const [controlsDispatcher] = useState(new ControlsDispatcher());
+
+  // locations
+  const [locations] = useState(LOCATIONS);
+  const [selectedLocation, setSelectedLocation] = useState<Location>({
+    title: "Model UK",
+    locationId: "ub.model-uk.uk-map",
+    hideDetails: true,
+  });
 
   useEffect(() => {
     let connection = new WebsocketConnection({
@@ -80,6 +132,83 @@ const DashboardProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
           });
         }
       });
+
+      window.addEventListener("keydown", (evt) => {
+        if (evt.key == "t") {
+          controlsDispatcher.dispatchEvent({
+            type: "change-location",
+            locationId: "ub.model-uk.tower-bridge",
+          });
+
+          let l = LOCATIONS.find(
+            (l) => l.locationId === "ub.model-uk.tower-bridge"
+          );
+          if (l) {
+            setSelectedLocation(l);
+          }
+        }
+        if (evt.key == "w") {
+          controlsDispatcher.dispatchEvent({
+            type: "change-location",
+            locationId: "ub.model-uk.uk-map",
+          });
+
+          let l = LOCATIONS.find((l) => l.locationId === "ub.model-uk.uk-map");
+          if (l) {
+            setSelectedLocation(l);
+          }
+        }
+        if (evt.key == "r") {
+          controlsDispatcher.dispatchEvent({
+            type: "change-location",
+            locationId: "ub.model-uk.raglan-castle",
+          });
+
+          let l = LOCATIONS.find(
+            (l) => l.locationId === "ub.model-uk.raglan-castle"
+          );
+          if (l) {
+            setSelectedLocation(l);
+          }
+        }
+        if (evt.key == "l") {
+          controlsDispatcher.dispatchEvent({
+            type: "change-location",
+            locationId: "ub.model-uk.leeds",
+          });
+
+          let l = LOCATIONS.find((l) => l.locationId === "ub.model-uk.leeds");
+          if (l) {
+            setSelectedLocation(l);
+          }
+        }
+        if (evt.key == "g") {
+          controlsDispatcher.dispatchEvent({
+            type: "change-location",
+            locationId: "ub.model-uk.glasgow-station",
+          });
+
+          let l = LOCATIONS.find(
+            (l) => l.locationId === "ub.model-uk.glasgow-station"
+          );
+          if (l) {
+            setSelectedLocation(l);
+          }
+        }
+        if (evt.key == "j") {
+          controlsDispatcher.dispatchEvent({
+            type: "change-location",
+            locationId: "ub.model-uk.st-james",
+          });
+
+          let l = LOCATIONS.find(
+            (l) => l.locationId === "ub.model-uk.st-james"
+          );
+          if (l) {
+            setSelectedLocation(l);
+          }
+        }
+      });
     }
   }, [client]);
 
@@ -88,6 +217,8 @@ const DashboardProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
       value={{
         client,
         controlsDispatcher,
+        locations,
+        selectedLocation,
       }}
     >
       {props.children}

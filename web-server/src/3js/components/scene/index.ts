@@ -5,7 +5,7 @@ import Stats from "three/examples/jsm/libs/stats.module";
 
 // scene classes
 import Camera from "./camera";
-import Renderer from "./renderer";
+import Renderer from "./bloom-renderer";
 import Lighting from "./lighting";
 import RoomEnvironment from "./room-environment";
 
@@ -79,6 +79,11 @@ export default class Scene {
 
     this.scene.add(this.room);
 
+    // bloom effects
+    if (this.camera.camera) {
+      this.renderer.setUpBloomEffects(this.scene, this.camera.camera);
+    }
+
     // this.toggleHelpers();
 
     window.addEventListener(
@@ -126,7 +131,7 @@ export default class Scene {
 
   render({ timestamp, render }: { timestamp: number; render: boolean }) {
     if (render) {
-      if (this.ctrls) {
+      if (this.ctrls?.enabled) {
         this.ctrls.update();
       }
 
@@ -291,5 +296,17 @@ export default class Scene {
 
   getCamera() {
     return this.camera;
+  }
+
+  getControls() {
+    return this.ctrls;
+  }
+
+  getBloomEffect() {
+    if (this.renderer) {
+      return this.renderer.getBloomEffect();
+    }
+
+    return false;
   }
 }

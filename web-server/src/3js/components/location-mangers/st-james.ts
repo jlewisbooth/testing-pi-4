@@ -1,5 +1,5 @@
 import BaseLocation from "./base-location";
-import { Object3D, Vector3 } from "three";
+import { Object3D, Vector3, Box3 } from "three";
 
 export default class StJamesManager extends BaseLocation {
   constructor() {
@@ -8,7 +8,7 @@ export default class StJamesManager extends BaseLocation {
     });
   }
 
-  locationId: string = "ST_JAMES";
+  locationId: string = "ub.model-uk.st-james";
   modelName: string = "st-james-centre-v2.gltf";
   modelPath: string = "/models/";
 
@@ -43,5 +43,13 @@ export default class StJamesManager extends BaseLocation {
         });
       },
     });
+  }
+
+  getPosition() {
+    return new Vector3(4, 5.913254418780314, -19.389659023284914);
+  }
+
+  getCameraPosition() {
+    return new Vector3(4, 17, -42);
   }
 }
