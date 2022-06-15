@@ -42,7 +42,7 @@ export default class LeedsManager extends BaseLocation {
   }
 
   locationId: string = "ub.model-uk.leeds";
-  modelName: string = "leeds-office-v8.gltf";
+  modelName: string = "leeds-office-v9.gltf";
   modelPath: string = "/models/";
 
   load({

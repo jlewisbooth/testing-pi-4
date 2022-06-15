@@ -9,6 +9,8 @@ import {
   BufferAttribute,
   SphereBufferGeometry,
   MeshStandardMaterial,
+  MeshBasicMaterialParameters,
+  Material,
 } from "three";
 
 import type Scene from "../scene";
@@ -17,6 +19,10 @@ import type { SelectiveBloomEffect } from "postprocessing";
 
 function isMesh(e: any): e is Mesh {
   return typeof e === "object" && e.geometry && e.material;
+}
+
+function isBasicMaterial(e: any): e is MeshBasicMaterial {
+  return e.isMaterial && e.color;
 }
 
 export default class StJamesManager extends BaseLocation {
@@ -29,6 +35,8 @@ export default class StJamesManager extends BaseLocation {
   locationId: string = "ub.model-uk.st-james";
   modelName: string = "st-james-centre-v4.gltf";
   modelPath: string = "/models/";
+
+  neoDiscriminator: string = "=>neo";
 
   load({
     loader,
@@ -77,7 +85,9 @@ export default class StJamesManager extends BaseLocation {
               ),
             });
 
-            let led = this.getLedObject(child.geometry, material);
+            let ledName = child.name.replace("led-", "");
+
+            let led = this.getLedObject(child.geometry, material, ledName);
 
             child.visible = false;
 
@@ -87,9 +97,15 @@ export default class StJamesManager extends BaseLocation {
           }
         });
 
-        this.leds.forEach((led) => {
+        this.leds.forEach((led, i) => {
+          if (!!led.name) {
+            this.ledMapping[led.name] = i;
+          }
+
           model?.add(led);
         });
+
+        console.log("LEDS", this.leds, this.ledMapping);
 
         cb({
           errorMessage,
@@ -100,9 +116,14 @@ export default class StJamesManager extends BaseLocation {
   }
 
   leds: Mesh[] = [];
+  ledMapping: { [key: string]: number } = {};
   selection?: any;
 
-  getLedObject(meshGeometry: BufferGeometry, material: MeshBasicMaterial) {
+  getLedObject(
+    meshGeometry: BufferGeometry,
+    material: MeshBasicMaterial,
+    ledId: string
+  ) {
     const geometry = new BufferGeometry();
 
     let meshPosition = meshGeometry.attributes.position.array;
@@ -133,6 +154,8 @@ export default class StJamesManager extends BaseLocation {
         const mesh = new Mesh(geometrySphere, material);
         mesh.position.copy(center);
 
+        mesh.name = ledId;
+
         return mesh;
       } else {
         return false;
@@ -149,6 +172,42 @@ export default class StJamesManager extends BaseLocation {
       this.leds.forEach((led) => {
         this.selection.add(led);
       });
+    }
+  }
+
+  setUpDispatcher(dispatcher: ControlsDispatcher) {
+    if (dispatcher) {
+      dispatcher.addEventListener(
+        this.locationId + this.neoDiscriminator,
+        ({ packet }: { packet: any }) => {
+          if (packet.locationId === this.locationId && packet.type === "neo") {
+            let data = packet.data;
+            this.onPacket(data);
+          }
+        }
+      );
+    }
+  }
+
+  onPacket(data: { commands: [number, [number, number, number]][] }) {
+    for (let led of this.leds) {
+      led.visible = false;
+    }
+
+    for (let command of data.commands) {
+      let ledId = command[0];
+      let rgb = command[1];
+
+      let ledIndex = this.ledMapping[ledId];
+      let led = this.leds[ledIndex];
+
+      if (led) {
+        led.visible = true;
+
+        if (!Array.isArray(led.material) && isBasicMaterial(led.material)) {
+          led.material.color.setRGB(rgb[0], rgb[1], rgb[2]);
+        }
+      }
     }
   }
 

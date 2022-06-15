@@ -114,8 +114,6 @@ const DashboardProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
 
   useEffect(() => {
     if (client) {
-      let queryParameters = parseQuery(window.location.search);
-
       client.on("connected", () => {
         client.listenToLocation("ub.model-uk.tower-bridge");
         client.listenToLocation("ub.model-uk.leeds");
