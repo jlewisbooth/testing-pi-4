@@ -84,8 +84,8 @@ export default class Renderer {
   bloomOptions = {
     blendFunction: BlendFunction.SCREEN,
     kernelSize: KernelSize.LARGE,
-    luminanceThreshold: 0.001,
-    luminanceSmoothing: 0.04,
+    luminanceThreshold: 0.1,
+    luminanceSmoothing: 0.0,
   };
   selectedBloomEffect?: SelectiveBloomEffect;
   effectPass?: EffectPass;
@@ -99,18 +99,11 @@ export default class Renderer {
       this.composer.addPass(this.renderPass);
       this.renderer.shadowMap.needsUpdate = true;
 
-      // const smaaEffect = new SMAAEffect(
-      //   assets.get("smaa-search"),
-      //   assets.get("smaa-area"),
-      //   SMAAPreset.HIGH,
-      //   EdgeDetectionMode.DEPTH
-      // );
-
       const smaaEffect = new SMAAEffect({
         edgeDetectionMode: EdgeDetectionMode.DEPTH,
         preset: SMAAPreset.HIGH,
       });
-      smaaEffect.edgeDetectionMaterial.edgeDetectionThreshold = 1;
+      smaaEffect.edgeDetectionMaterial.edgeDetectionThreshold = 0.01;
 
       this.selectedBloomEffect = new SelectiveBloomEffect(
         scene,
@@ -118,8 +111,8 @@ export default class Renderer {
         this.bloomOptions
       );
       this.selectedBloomEffect.inverted = false;
-      this.selectedBloomEffect.intensity = 3;
-      this.selectedBloomEffect.blurPass.scale = 1.5;
+      this.selectedBloomEffect.intensity = 4;
+      this.selectedBloomEffect.blurPass.scale = 1.2;
       this.selectedBloomEffect.luminancePass.enabled = true;
 
       this.effectPass = new EffectPass(

@@ -120,6 +120,7 @@ const DashboardProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
         client.listenToLocation("ub.model-uk.tower-bridge");
         client.listenToLocation("ub.model-uk.leeds");
         client.listenToLocation("ub.model-uk.glasgow-station");
+        client.listenToLocation("ub.model-uk.st-james");
       });
 
       client.on("packet", (msg: { [key: string]: any }) => {

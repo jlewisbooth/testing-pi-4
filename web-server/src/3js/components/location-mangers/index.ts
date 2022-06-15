@@ -9,6 +9,7 @@ import UKMapManager from "./uk-map";
 // model loader manager
 import ModelLoader from "../loaders/model-loader";
 
+import { Camera } from "three";
 // types
 import type Scene from "../scene/index";
 import type { ControlsDispatcher } from "../../../util/controls-dispatcher";
@@ -75,10 +76,10 @@ export default class LocationManager {
     });
   }
 
-  animate(timestamp?: number) {
+  animate(timestamp?: number, camera?: Camera) {
     if (typeof timestamp === "number") {
       Object.values(this.managers).forEach((manager) => {
-        manager.animate(timestamp);
+        manager.animate(timestamp, camera);
       });
     }
   }

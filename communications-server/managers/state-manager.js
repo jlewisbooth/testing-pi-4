@@ -28,6 +28,7 @@ class StateManager {
     this.subscribe("ub.model-uk.tower-bridge");
     this.subscribe("ub.model-uk.leeds");
     this.subscribe("ub.model-uk.glasgow-station");
+    this.subscribe("ub.model-uk.st-james");
   }
 
   publish(locationId, packet) {

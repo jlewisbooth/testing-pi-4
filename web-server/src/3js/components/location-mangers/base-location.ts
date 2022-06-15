@@ -164,7 +164,7 @@ export default class BaseLocation {
 
   setUpDispatcher(dispatcher: ControlsDispatcher) {}
 
-  animate(timestamp: number) {}
+  animate(timestamp: number, camera?: Camera) {}
 
   initBloomEffect(bloomEffect: SelectiveBloomEffect) {}
 }

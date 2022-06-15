@@ -149,7 +149,8 @@ export default class MainController {
       this.updateAnimation = false;
 
       if (this.locationManager) {
-        this.locationManager.animate(timestamp);
+        let camera = this.scene?.getCamera();
+        this.locationManager.animate(timestamp, camera?.camera);
       }
 
       if (this.cameraController) {
