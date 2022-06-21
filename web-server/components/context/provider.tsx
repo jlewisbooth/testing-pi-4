@@ -98,7 +98,7 @@ const DashboardProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
 
   useEffect(() => {
     let connection = new WebsocketConnection({
-      host: "localhost:4000", // "modeluk.local"
+      host: "modeluk.local", // "modeluk.local"
       path: "data-stream/client",
       secure: false,
       debug: true,
