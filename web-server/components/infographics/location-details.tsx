@@ -66,8 +66,6 @@ export default function LocationDetails() {
     config: config.gentle,
   });
 
-  console.log(selectedLocation);
-
   return (
     <Wrapper>
       {transitions((styles, location) => {

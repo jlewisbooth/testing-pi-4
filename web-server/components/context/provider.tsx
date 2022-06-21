@@ -98,7 +98,7 @@ const DashboardProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
 
   useEffect(() => {
     let connection = new WebsocketConnection({
-      host: "modeluk.local",
+      host: "localhost:4000", // "modeluk.local"
       path: "data-stream/client",
       secure: false,
       debug: true,
@@ -116,9 +116,11 @@ const DashboardProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
     if (client) {
       client.on("connected", () => {
         client.listenToLocation("ub.model-uk.tower-bridge");
+        client.listenToLocation("ub.model-uk.raglan-castle");
         client.listenToLocation("ub.model-uk.leeds");
         client.listenToLocation("ub.model-uk.glasgow-station");
         client.listenToLocation("ub.model-uk.st-james");
+        client.listenToLocation("ub.model-uk.controller");
       });
 
       client.on("packet", (msg: { [key: string]: any }) => {
@@ -132,82 +134,115 @@ const DashboardProvider: React.FC<React.PropsWithChildren<{}>> = (props) => {
         }
       });
 
-      window.addEventListener("keydown", (evt) => {
-        if (evt.key == "t") {
-          controlsDispatcher.dispatchEvent({
-            type: "change-location",
-            locationId: "ub.model-uk.tower-bridge",
-          });
+      let controllerLocationId = "ub.model-uk.controller";
+      let selectType = "select";
 
-          let l = LOCATIONS.find(
-            (l) => l.locationId === "ub.model-uk.tower-bridge"
-          );
-          if (l) {
-            setSelectedLocation(l);
+      controlsDispatcher.addEventListener(
+        controllerLocationId + "=>" + selectType,
+        ({ packet }: { packet: any }) => {
+          if (
+            packet.locationId === controllerLocationId &&
+            packet.type === selectType
+          ) {
+            let data = packet.data,
+              l;
+
+            switch (data.locationId) {
+              case "ub.model-uk.tower-bridge":
+                controlsDispatcher.dispatchEvent({
+                  type: "change-location",
+                  locationId: "ub.model-uk.tower-bridge",
+                });
+
+                l = LOCATIONS.find(
+                  (l) => l.locationId === "ub.model-uk.tower-bridge"
+                );
+                if (l) {
+                  setSelectedLocation(l);
+                }
+                break;
+              case "ub.model-uk.uk-map":
+                controlsDispatcher.dispatchEvent({
+                  type: "change-location",
+                  locationId: "ub.model-uk.uk-map",
+                });
+
+                l = LOCATIONS.find(
+                  (l) => l.locationId === "ub.model-uk.uk-map"
+                );
+                if (l) {
+                  setSelectedLocation(l);
+                }
+                break;
+              case "ub.model-uk.raglan-castle":
+                controlsDispatcher.dispatchEvent({
+                  type: "change-location",
+                  locationId: "ub.model-uk.raglan-castle",
+                });
+
+                l = LOCATIONS.find(
+                  (l) => l.locationId === "ub.model-uk.raglan-castle"
+                );
+                if (l) {
+                  setSelectedLocation(l);
+                }
+                break;
+              case "ub.model-uk.leeds":
+                controlsDispatcher.dispatchEvent({
+                  type: "change-location",
+                  locationId: "ub.model-uk.leeds",
+                });
+
+                l = LOCATIONS.find((l) => l.locationId === "ub.model-uk.leeds");
+                if (l) {
+                  setSelectedLocation(l);
+                }
+                break;
+
+              case "ub.model-uk.glasgow-station":
+                controlsDispatcher.dispatchEvent({
+                  type: "change-location",
+                  locationId: "ub.model-uk.glasgow-station",
+                });
+
+                l = LOCATIONS.find(
+                  (l) => l.locationId === "ub.model-uk.glasgow-station"
+                );
+                if (l) {
+                  setSelectedLocation(l);
+                }
+                break;
+              case "ub.model-uk.st-james":
+                controlsDispatcher.dispatchEvent({
+                  type: "change-location",
+                  locationId: "ub.model-uk.st-james",
+                });
+
+                l = LOCATIONS.find(
+                  (l) => l.locationId === "ub.model-uk.st-james"
+                );
+                if (l) {
+                  setSelectedLocation(l);
+                }
+                break;
+              default:
+                controlsDispatcher.dispatchEvent({
+                  type: "change-location",
+                  locationId: "ub.model-uk.uk-map",
+                });
+
+                l = LOCATIONS.find(
+                  (l) => l.locationId === "ub.model-uk.uk-map"
+                );
+                if (l) {
+                  setSelectedLocation(l);
+                }
+
+                break;
+            }
           }
         }
-        if (evt.key == "w") {
-          controlsDispatcher.dispatchEvent({
-            type: "change-location",
-            locationId: "ub.model-uk.uk-map",
-          });
-
-          let l = LOCATIONS.find((l) => l.locationId === "ub.model-uk.uk-map");
-          if (l) {
-            setSelectedLocation(l);
-          }
-        }
-        if (evt.key == "r") {
-          controlsDispatcher.dispatchEvent({
-            type: "change-location",
-            locationId: "ub.model-uk.raglan-castle",
-          });
-
-          let l = LOCATIONS.find(
-            (l) => l.locationId === "ub.model-uk.raglan-castle"
-          );
-          if (l) {
-            setSelectedLocation(l);
-          }
-        }
-        if (evt.key == "l") {
-          controlsDispatcher.dispatchEvent({
-            type: "change-location",
-            locationId: "ub.model-uk.leeds",
-          });
-
-          let l = LOCATIONS.find((l) => l.locationId === "ub.model-uk.leeds");
-          if (l) {
-            setSelectedLocation(l);
-          }
-        }
-        if (evt.key == "g") {
-          controlsDispatcher.dispatchEvent({
-            type: "change-location",
-            locationId: "ub.model-uk.glasgow-station",
-          });
-
-          let l = LOCATIONS.find(
-            (l) => l.locationId === "ub.model-uk.glasgow-station"
-          );
-          if (l) {
-            setSelectedLocation(l);
-          }
-        }
-        if (evt.key == "j") {
-          controlsDispatcher.dispatchEvent({
-            type: "change-location",
-            locationId: "ub.model-uk.st-james",
-          });
-
-          let l = LOCATIONS.find(
-            (l) => l.locationId === "ub.model-uk.st-james"
-          );
-          if (l) {
-            setSelectedLocation(l);
-          }
-        }
-      });
+      );
     }
   }, [client]);
 

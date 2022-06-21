@@ -20,6 +20,10 @@ function isMesh(e: any): e is Mesh {
   return typeof e === "object" && e.geometry && e.material;
 }
 
+function isBasicMaterial(e: any): e is MeshBasicMaterial {
+  return e.isMaterial && e.color;
+}
+
 const EAST_SIDE_INDEX = [
   9, 10, 11, 12, 13, 22, 23, 24, 25, 34, 35, 36, 37, 45, 46, 47, 48, 49,
 ];
@@ -73,32 +77,30 @@ export default class LeedsManager extends BaseLocation {
 
           if (child.name.startsWith("led") && isMesh(child)) {
             child.material = new MeshBasicMaterial({
-              color: new Color().setRGB(
-                Math.random(),
-                Math.random(),
-                Math.random()
-              ),
+              color: new Color().setRGB(0.15, 0.15, 0.15),
             });
 
             if (EAST_SIDE_LEDS.includes(child.name)) {
               this.eastLeds.push(child);
-
               child.visible = false;
+
+              this.allLeds.push(child);
             } else if (WEST_SIDE_LEDS.includes(child.name)) {
               this.westLeds.push(child);
+              this.allLeds.push(child);
             } else if (SOUTH_SIDE_LEDS.includes(child.name)) {
               this.southLeds.push(child);
+              this.allLeds.push(child);
             }
           }
         });
 
-        // add train tunnel lights
-        const geometry = new BoxBufferGeometry(0.04, 0.1, 0.1);
-        const material = new MeshStandardMaterial({
-          color: 0x000000,
+        this.allLeds.forEach((led, i) => {
+          if (!!led.name) {
+            let ledName = led.name.replace("led-", "");
+            this.ledMapping[ledName] = i;
+          }
         });
-        const cube = new Mesh(geometry, material);
-        cube.position.copy(new Vector3(0.85, 0.17, -1.2));
 
         cb({
           errorMessage,
@@ -118,7 +120,11 @@ export default class LeedsManager extends BaseLocation {
   eastLeds: Mesh[] = [];
   southLeds: Mesh[] = [];
 
+  allLeds: Mesh[] = [];
+  ledMapping: { [key: string]: number } = {};
+
   tofDiscriminator: string = "=>tof";
+  neoDiscriminator: string = "=>neo";
 
   initBloomEffect(bloomEffect: SelectiveBloomEffect, scene?: Scene) {
     this.selection = bloomEffect.selection;
@@ -199,6 +205,40 @@ export default class LeedsManager extends BaseLocation {
           }
         }
       );
+
+      dispatcher.addEventListener(
+        this.locationId + this.neoDiscriminator,
+        ({ packet }: { packet: any }) => {
+          if (packet.locationId === this.locationId && packet.type === "neo") {
+            let data = packet.data;
+            this.onPacket(data);
+          }
+        }
+      );
+    }
+  }
+
+  onPacket(data: { commands: [number, [number, number, number]][] }) {
+    for (let led of this.allLeds) {
+      if (led && this.selection) {
+        if (!Array.isArray(led.material) && isBasicMaterial(led.material)) {
+          led.material.color.setRGB(0.15, 0.15, 0.15);
+        }
+      }
+    }
+
+    for (let command of data.commands) {
+      let ledId = command[0];
+      let rgb = command[1];
+
+      let ledIndex = this.ledMapping[ledId];
+      let led = this.allLeds[ledIndex];
+
+      if (led) {
+        if (!Array.isArray(led.material) && isBasicMaterial(led.material)) {
+          led.material.color.setRGB(rgb[0] / 255, rgb[1] / 255, rgb[2] / 255);
+        }
+      }
     }
   }
 
@@ -226,7 +266,7 @@ export default class LeedsManager extends BaseLocation {
       let position = camera?.position;
 
       if (position) {
-        let { x, y, z } = position;
+        let { x, z } = position;
 
         let cameraVector = new Vector3(
           x - this.position.x,

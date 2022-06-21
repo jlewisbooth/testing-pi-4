@@ -58,23 +58,11 @@ export default class StJamesManager extends BaseLocation {
         // move model to correct position
         model?.position.copy(new Vector3(4, 0, -19.5));
 
-        console.log(model);
-
         model?.traverse((child) => {
           child.matrixAutoUpdate = false;
           child.updateMatrix();
 
           child.frustumCulled = true;
-
-          if (child.name === "mesh_1") {
-            if (isMesh(child)) {
-              // child.material = new MeshStandardMaterial({
-              //   transparent: true,
-              //   opacity: 0.2,
-              //   color: new Color(0.9, 0.9, 0.9),
-              // });
-            }
-          }
 
           if (child.name.startsWith("led") && isMesh(child)) {
             const material = new MeshBasicMaterial({
@@ -93,6 +81,7 @@ export default class StJamesManager extends BaseLocation {
 
             if (led) {
               this.leds.push(led);
+              led.visible = false;
             }
           }
         });
@@ -104,8 +93,6 @@ export default class StJamesManager extends BaseLocation {
 
           model?.add(led);
         });
-
-        console.log("LEDS", this.leds, this.ledMapping);
 
         cb({
           errorMessage,
@@ -205,7 +192,7 @@ export default class StJamesManager extends BaseLocation {
         led.visible = true;
 
         if (!Array.isArray(led.material) && isBasicMaterial(led.material)) {
-          led.material.color.setRGB(rgb[0], rgb[1], rgb[2]);
+          led.material.color.setRGB(rgb[0] / 255, rgb[1] / 255, rgb[2] / 255);
         }
       }
     }

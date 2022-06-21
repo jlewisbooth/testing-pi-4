@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { Typography } from "antd";
-import { useContext, useState } from "react";
+import { useCallback, useContext, useState } from "react";
 import Context from "../context/dispatcher";
 
 const { Text } = Typography;
@@ -39,19 +39,30 @@ const LocationContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+
+  cursor: pointer;
+  pointer-events: all;
 `;
 
 const Location = ({
   title,
   locationId,
   selectedId,
+  onSelect,
 }: {
   title: string;
   locationId: string;
   selectedId: string | null;
+  onSelect: (id: string) => void;
 }) => {
   return (
-    <LocationContainer>
+    <LocationContainer
+      onClick={() => {
+        if (typeof onSelect === "function") {
+          onSelect(locationId);
+        }
+      }}
+    >
       <Text
         style={{
           transition: "0.4s",
@@ -68,6 +79,22 @@ const Location = ({
 export default function LocationList() {
   const locations = useContext(Context).locations;
   const selectedLocation = useContext(Context).selectedLocation;
+  const controlsDispatcher = useContext(Context).controlsDispatcher;
+
+  const selectProject = useCallback((locationId: string) => {
+    if (controlsDispatcher) {
+      controlsDispatcher.dispatchEvent({
+        type: "ub.model-uk.controller=>select",
+        packet: {
+          locationId: "ub.model-uk.controller",
+          type: "select",
+          data: {
+            locationId,
+          },
+        },
+      });
+    }
+  }, []);
 
   return (
     <Wrapper>
@@ -79,6 +106,7 @@ export default function LocationList() {
               locationId={location.locationId}
               selectedId={selectedLocation.locationId}
               key={location.locationId}
+              onSelect={(id: string) => selectProject(id)}
             />
           );
         })}

@@ -21,6 +21,7 @@ export default function Infographics() {
     <Container>
       <LocationList />
       <LocationDetails />
+      <LocationGraphs />
     </Container>
   );
 }
