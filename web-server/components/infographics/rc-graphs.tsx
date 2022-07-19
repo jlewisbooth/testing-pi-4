@@ -2,13 +2,6 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { Typography } from "antd";
 import Context from "../context/dispatcher";
-import { useTransition, animated, config } from "@react-spring/web";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faTemperatureHalf,
-  faDroplet,
-  faGauge,
-} from "@fortawesome/free-solid-svg-icons";
 
 const { Text } = Typography;
 
@@ -117,13 +110,12 @@ export default function RaglanCastleGraphs() {
           <Text style={{ color: "white" }}>Raglan Castle Environment</Text>
         </Header>
         <ValueContainer>
-          <FontAwesomeIcon
-            icon={faTemperatureHalf}
-            size={"3x"}
+          <img
+            src={"/icons/temperature-half-solid.svg"}
             style={{
               marginRight: 9,
+              height: 42,
             }}
-            color={"red"}
           />
           <Value ref={tempRef}>0</Value>
           <Value
@@ -135,25 +127,23 @@ export default function RaglanCastleGraphs() {
           </Value>
         </ValueContainer>
         <ValueContainer>
-          <FontAwesomeIcon
-            icon={faDroplet}
-            size={"3x"}
+          <img
+            src={"/icons/droplet-solid.svg"}
             style={{
               marginRight: 9,
+              height: 42,
             }}
-            color={"blue"}
           />
           <Value ref={humidRef}>0</Value>
           <Value>%</Value>
         </ValueContainer>
         <ValueContainer>
-          <FontAwesomeIcon
-            icon={faGauge}
-            size={"3x"}
+          <img
+            src={"/icons/gauge-solid.svg"}
             style={{
               marginRight: 9,
+              height: 42,
             }}
-            color={"#540096"}
           />
           <Value ref={pressureRef}>0</Value>
           <Value
